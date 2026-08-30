@@ -205,7 +205,10 @@ img, video, canvas{ display: block; max-width: 100%; }
 .stage__video{ display: none; }
 
 /* ── com JS: o palco vira cinema ──────────────────────────── */
-.js .hero__track{ height: 460svh; }
+/* O vídeo novo tem 5s (o antigo, 8s). Para o scrub não ficar rápido
+   demais e a rolagem respirar, o trilho ganhou altura: mais pixels de
+   rolagem para a mesma linha do tempo. */
+.js .hero__track{ height: 540svh; }
 .js .hero__stage{
   position: sticky; top: 0;
   height: 100svh; min-height: 0;
@@ -245,6 +248,22 @@ img, video, canvas{ display: block; max-width: 100%; }
    encode (filtro `curves`), senão fica um véu cinza visível. */
 .js .stage__video,
 .js .stage__poster{ mix-blend-mode: screen; }
+/* O globo e o túnel enchem a tela de canto a canto — aí não há preto para
+   sumir e a borda retangular aparece. Esta máscara esfuma os quatro lados.
+   Ela APERTA conforme --focus (0 na mão, no preto puro, onde não precisa;
+   1 do globo em diante, onde o retângulo apareceria): o miolo — mão, globo,
+   palavra — fica sempre, e a periferia dissolve no fundo da página. */
+.js .stage__video,
+.js .stage__poster{
+  -webkit-mask-image: radial-gradient(ellipse 86% 90% at 50% 46%,
+            #000 calc(58% - 27% * var(--focus, 0)),
+            rgba(0,0,0,.28) calc(80% - 20% * var(--focus, 0)),
+            transparent calc(100% - 16% * var(--focus, 0)));
+          mask-image: radial-gradient(ellipse 86% 90% at 50% 46%,
+            #000 calc(58% - 27% * var(--focus, 0)),
+            rgba(0,0,0,.28) calc(80% - 20% * var(--focus, 0)),
+            transparent calc(100% - 16% * var(--focus, 0)));
+}
 .js .stage__video{ display: block; }
 .js .stage__poster{ transition: opacity 600ms var(--ease); }
 .js .is-ready .stage__poster{ opacity: 0; }
@@ -274,11 +293,52 @@ img, video, canvas{ display: block; max-width: 100%; }
 /* Mais leve do que era. Antes ela também servia para disfarçar a borda do
    vídeo; agora a borda não existe, então só precisa segurar o contraste do
    texto embaixo e no topo. */
+/* O radial segura o contraste do texto. As faixas de cima e de baixo são
+   o "capô": crescem com --focus para comer a aresta reta do túnel — quando
+   a tela toda acende, o topo do vídeo tem que morrer no preto, não bater
+   numa linha. Na mão (--focus 0) elas quase não existem. */
 .stage__vignette{
   position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 86% 76% at 50% 46%, transparent 55%, rgba(4,7,12,.46) 100%),
-    linear-gradient(to bottom, rgba(4,7,12,.62), transparent 20%, transparent 66%, rgba(4,7,12,.82));
+    radial-gradient(ellipse 86% 74% at 50% 46%, transparent 50%, rgba(4,7,12,.5) 100%),
+    linear-gradient(to bottom,
+      rgba(4,7,12, calc(.55 + .45 * var(--focus, 0))) 0%,
+      rgba(4,7,12,0) calc(14% + 20% * var(--focus, 0)),
+      rgba(4,7,12,0) calc(66% - 12% * var(--focus, 0)),
+      rgba(4,7,12, calc(.82 + .18 * var(--focus, 0))) 100%);
+}
+
+/* ── a marca, escrita de verdade ────────────────────────────────
+   Sentada exatamente sobre o wordmark do vídeo, que a IA gerou com o
+   "İ" pingado do turco. O véu atrás engole a palavra do vídeo; esta,
+   em Archivo, fica por cima — nítida, na grafia certa. Acende junto
+   com --ignite (0.80 → 0.97 no app.js). Sem JS / movimento reduzido
+   ela não aparece: a página empilhada é o fallback documentado. */
+.stage__wordmark{ display: none; }
+.js .stage__wordmark{
+  display: block;
+  position: absolute; left: 50%; top: 49.5%;
+  margin: 0; z-index: 2; pointer-events: none;
+  font-family: var(--f-display); font-weight: 700;
+  font-size: clamp(2.1rem, .6rem + 7.2vw, 5.5rem);
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  opacity: var(--ignite, 0);
+  transform: translate(-50%, -50%) scale(calc(.965 + .035 * var(--ignite, 0)));
+  filter: blur(calc((1 - var(--ignite, 0)) * 7px));
+  text-shadow: 0 0 calc(18px + 46px * var(--ignite, 0)) rgba(62, 184, 255, calc(.25 + .45 * var(--ignite, 0)));
+  will-change: opacity, transform, filter;
+}
+/* o véu que engole a palavra do vídeo (que sai com o "İ" turco). Precisa
+   ser denso e um pouco maior que a palavra, porque a do vídeo entra um
+   pelo abaixo e menor. Fecha bem antes do CTA. */
+.js .stage__wordmark::before{
+  content: ''; position: absolute; z-index: -1;
+  left: 50%; top: 46%; transform: translate(-50%, -50%);
+  width: 96vw; height: 30vh;
+  background: radial-gradient(ellipse 44% 46% at 50% 50%,
+    rgba(4,7,12,.98) 40%, rgba(4,7,12,.55) 62%, rgba(4,7,12,0) 80%);
 }
 
 /* ── batimentos ─────────────────────────────────────────────── */
@@ -519,7 +579,19 @@ img, video, canvas{ display: block; max-width: 100%; }
     background: radial-gradient(ellipse 62% 30% at 50% 36%, rgba(62,184,255,.34), transparent 70%);
   }
   .js .stage__vignette{
-    background: linear-gradient(to bottom, rgba(4,7,12,.55), transparent 30%, transparent 46%, rgba(4,7,12,.90));
+    background: linear-gradient(to bottom, rgba(4,7,12,.62), transparent 26%, transparent 44%, rgba(4,7,12,.92));
+  }
+  /* no celular o vídeo está 1.4x e ancorado em "center 30%": a palavra do
+     vídeo sobe para ~28% da tela. A marca real e o véu acompanham. */
+  .js .stage__wordmark{
+    top: 27%;
+    font-size: clamp(1.85rem, 9vw, 2.6rem);
+    letter-spacing: .1em;
+  }
+  .js .stage__wordmark::before{
+    width: 170vw; height: 46vh;
+    background: radial-gradient(ellipse 40% 44% at 50% 50%,
+      rgba(4,7,12,.99) 44%, rgba(4,7,12,.6) 64%, rgba(4,7,12,0) 82%);
   }
   .js .beat{
     top: auto;

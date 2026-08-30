@@ -23,22 +23,22 @@
   const magGlow = magnet && magnet.querySelector('.btn__glow');
   const navMark = document.querySelector('.nav__mark');
 
-  const FRAMES = 192, FPS = 24;
-  const LAST_T = (FRAMES - 1) / FPS;       // 7.958s — último quadro
+  const FRAMES = 121, FPS = 24;
+  const LAST_T = (FRAMES - 1) / FPS;       // 5.0s — último quadro
 
   /* ── janelas de cada batimento: [entra, entrou, sai, saiu] ────
-     Casadas na mão com a linha do tempo do vídeo:
-       0.17 o anel estoura · 0.25 o globo nasce · 0.50 painéis cheios
-       0.76 tudo se dissolve · 0.84 SIMBIONTE limpo na tela          */
+     Casadas na mão com a linha do tempo do vídeo do Kling (5s):
+       0.00–0.20 mão e anéis no preto puro · 0.22 o globo nasce
+       0.35–0.48 painéis cheios · 0.50–0.78 o túnel · 0.83 a palavra assenta */
   const WINDOWS = [
     /* começa em negativo de propósito: com [0, …] a função devolve 0
        exatamente em p=0 e o hero abria sem título nenhum na tela */
     [-0.100, -0.020, 0.150, 0.210],
-    [ 0.235,  0.295, 0.375, 0.425],
-    [ 0.455,  0.515, 0.665, 0.715],
-    [ 0.800,  0.860, 9.990, 9.999],
+    [ 0.240,  0.300, 0.400, 0.460],
+    [ 0.490,  0.560, 0.700, 0.760],
+    [ 0.820,  0.890, 9.990, 9.999],
   ];
-  const RAIL = [[0.22, 'toque'], [0.44, 'expansão'], [0.74, 'sistema'], [2, 'simbionte']];
+  const RAIL = [[0.21, 'toque'], [0.47, 'expansão'], [0.80, 'sistema'], [2, 'simbionte']];
 
   /* ── utilidades ───────────────────────────────────────────── */
   const clamp  = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -69,7 +69,7 @@
   let magX = 0, magY = 0, magXT = 0, magYT = 0;
   let magRect = null;
   let pointerIn = false, running = false, visible = false;
-  const lastWrite = { p: -1, ignite: -1, frame: -1, rail: '' };
+  const lastWrite = { p: -1, ignite: -1, focus: -1, frame: -1, rail: '' };
 
   /* ── o palco ──────────────────────────────────────────────────
      Um caminho só, vídeo, em qualquer aparelho. Antes o celular
@@ -168,11 +168,16 @@
        parada ficava seca. Assim o glide dura o mesmo em qualquer tela. */
     const now = performance.now();
     const dt = Math.min(64, now - lastT); lastT = now;
-    const k  = 1 - Math.pow(1 - 0.10, dt / 16.667);
-    pSmooth = lerp(pSmooth, pRaw, k);
+    /* dois ritmos: o progresso persegue o alvo devagar, então quando a
+       rolagem para a cena ainda desliza um pouco antes de assentar — é o
+       "continua fluido" que o Luiz pediu. O cursor persegue mais rápido,
+       senão o parallax fica borrachudo e atrasado. */
+    const kP = 1 - Math.pow(1 - 0.052, dt / 16.667);
+    const kM = 1 - Math.pow(1 - 0.14,  dt / 16.667);
+    pSmooth = lerp(pSmooth, pRaw, kP);
     if (Math.abs(pSmooth - pRaw) < .00002) pSmooth = pRaw;
-    mx = lerp(mx, mxT, k);
-    my = lerp(my, myT, k);
+    mx = lerp(mx, mxT, kM);
+    my = lerp(my, myT, kM);
 
     const p = pSmooth;
 
@@ -203,12 +208,20 @@
         railLbl.toggleAttribute('data-hot', p >= 0.8);
       }
 
-      // o brilho da marca sobe junto com o wordmark do vídeo
-      const ig = smooth(clamp((p - 0.74) / 0.18, 0, 1));
+      // o brilho da marca sobe junto com o wordmark, que assenta em ~0.83
+      const ig = smooth(clamp((p - 0.80) / 0.17, 0, 1));
       if (Math.abs(ig - lastWrite.ignite) > .004) {
         lastWrite.ignite = ig;
         stage.style.setProperty('--ignite', ig.toFixed(3));
         if (navMark) navMark.style.setProperty('--ignite', ig.toFixed(3));
+      }
+
+      /* a máscara do vídeo aperta quando o globo entra: na mão (preto puro)
+         ela nem precisa existir; do globo ao túnel é o que dissolve a borda */
+      const fo = smooth(clamp((p - 0.16) / 0.09, 0, 1));
+      if (Math.abs(fo - lastWrite.focus) > .004) {
+        lastWrite.focus = fo;
+        stage.style.setProperty('--focus', fo.toFixed(3));
       }
 
       /* — batimentos — */

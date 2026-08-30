@@ -4,8 +4,8 @@
     {
       "name": "simbionte-lp",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5621", "--directory", "C:/dev/simbionte-lp"],
-      "port": 5621
+      "runtimeArgs": ["C:/dev/simbionte-lp/serve.py"],
+      "port": 5622
     }
   ]
 }
