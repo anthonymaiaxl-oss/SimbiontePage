@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "simbionte-lp",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5621", "--directory", "C:/dev/simbionte-lp"],
+      "port": 5621
+    }
+  ]
+}

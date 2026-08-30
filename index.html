@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Palavra-chave na frente e marca no fim (52 chars). O título poético
+     fica no og:title, que é onde ele rende: compartilhamento social. -->
+<title>Landing pages sob medida, no ar em 7 dias | Simbionte</title>
+<meta name="description" content="A Simbionte cria landing pages sob medida que abrem em menos de um segundo e conduzem o visitante até o botão. Do briefing ao ar em 7 dias.">
+<meta name="theme-color" content="#04070c">
+<link rel="canonical" href="https://simbionte.com.br/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Simbionte">
+<meta property="og:title" content="Simbionte — Landing pages que carregam antes do julgamento">
+<meta property="og:description" content="Landing pages sob medida que abrem em menos de um segundo e conduzem o visitante até o botão.">
+<meta property="og:image" content="https://simbionte.com.br/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- imagesrcset + type: quem não decodifica AVIF simplesmente ignora
+     este preload em vez de baixar um arquivo que não vai conseguir abrir -->
+<link rel="preload" as="image" imagesrcset="assets/poster.avif" type="image/avif" fetchpriority="high">
+<!-- as duas faces que aparecem na primeira dobra; as outras três o CSS pede -->
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/archivo-700.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/dm-sans-400.woff2" crossorigin>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+<!-- Marca que há JS antes da primeira pintura. Sem isso, o hero pisca
+     no layout empilhado (que é justamente o fallback sem JS). -->
+<script>document.documentElement.classList.add('js');</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Simbionte",
+  "description": "Estúdio de landing pages sob medida, focado em velocidade de carregamento e conversão.",
+  "url": "https://simbionte.com.br/",
+  "image": "https://simbionte.com.br/assets/og.jpg",
+  "areaServed": "BR",
+  "availableLanguage": "pt-BR",
+  "serviceType": "Criação de landing page",
+  "offers": {
+    "@type": "Offer",
+    "name": "Landing page sob medida",
+    "description": "Página única, do briefing ao ar em 7 dias, com domínio, analytics, formulário e WhatsApp ligados."
+  }
+}
+</script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     ► NÚMERO DO WHATSAPP — É AQUI QUE VOCÊ TROCA
+
+     O número abaixo é PLACEHOLDER (5500000000000) e NÃO funciona.
+     Para ligar o funil de verdade:
+
+       1. Aperte Ctrl+F neste arquivo e procure por:  wa.me
+       2. Aparecem 3 resultados (botão do topo, botão do hero,
+          botão do rodapé). Troque o número nos 3.
+       3. Formato: 55 + DDD + número, sem espaço, traço ou parêntese.
+          Ex.: (11) 99876-5432  vira  5511998765432
+
+     O texto depois de ?text= é a mensagem que já vem digitada para o
+     cliente. Está codificada para URL: %20 é espaço, %21 é "!".
+     ══════════════════════════════════════════════════════════════════ -->
+
+<a class="skip-link" href="#depois">Pular a abertura e ir para o conteúdo</a>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="/" aria-label="Simbionte, página inicial">
+    <span class="nav__mark" aria-hidden="true"></span>
+    <span class="nav__word">Simbionte</span>
+  </a>
+  <nav class="nav__links" aria-label="Principal">
+    <a href="#depois">Método</a>
+    <a href="#depois">Trabalhos</a>
+    <a href="#depois">Preços</a>
+  </nav>
+  <a class="btn btn--sm" href="https://wa.me/5500000000000?text=Oi%21%20Vim%20pelo%20site%20da%20Simbionte%20e%20quero%20uma%20landing%20page."
+     target="_blank" rel="noopener">Quero a minha</a>
+</header>
+
+<main>
+
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<section class="hero" id="hero" aria-labelledby="hero-titulo">
+  <div class="hero__track">
+    <div class="hero__stage">
+
+      <!-- palco: o vídeo é rebobinado pela rolagem, não tocado -->
+      <div class="stage__media" aria-hidden="true">
+        <!-- O onerror inline é de propósito: se o navegador aceitar a fonte
+             AVIF mas falhar ao decodificar, no modo de movimento reduzido o
+             poster é a única imagem da página — sem isso, hero em branco.
+             Precisa valer antes de qualquer script, daí ser atributo. -->
+        <picture class="stage__picture">
+          <source srcset="assets/poster.avif" type="image/avif">
+          <img class="stage__poster" src="assets/poster.jpg" alt="" width="1600" height="900"
+               fetchpriority="high" decoding="async"
+               onerror="this.onerror=null;var s=this.parentNode.querySelector('source');if(s)s.remove();this.src='assets/poster.jpg'">
+        </picture>
+        <!-- o JS promove um dos dois a `src`; assim o celular nunca baixa
+             o arquivo de 1080p e o desktop nunca baixa o de 720p -->
+        <video class="stage__video"
+               data-src="assets/hero.mp4" data-src-sm="assets/hero-720.mp4"
+               muted playsinline preload="none"
+               width="1920" height="1080" tabindex="-1" disablepictureinpicture></video>
+        <div class="stage__bloom"></div>
+        <div class="stage__grid"></div>
+        <div class="stage__vignette"></div>
+      </div>
+
+      <!-- descrição do que o palco mostra, para quem não vê -->
+      <p class="sr-only">
+        Ao rolar a página, uma animação avança: uma mão desenhada em linhas de luz toca um
+        ponto brilhante, o toque se abre em um anel de energia, o anel vira um globo cercado
+        de painéis de dados e, no fim, tudo se dissolve na palavra Simbionte.
+      </p>
+
+      <!-- ── batimentos ── -->
+      <div class="beats">
+
+        <article class="beat beat--1" data-beat="1">
+          <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Landing pages sob medida</p>
+          <h1 class="beat__title" id="hero-titulo" data-split>Um toque decide tudo.</h1>
+          <p class="beat__text">
+            A Simbionte cria landing pages que abrem em menos de um segundo — e conduzem
+            o visitante até o botão antes que ele pense em voltar.
+          </p>
+          <p class="cue" aria-hidden="true"><span class="cue__rule"></span>role para construir</p>
+        </article>
+
+        <article class="beat beat--2" data-beat="2">
+          <!-- o espaço antes do <br> é de propósito: sem ele, leitores de
+               tela que concatenam o texto dizem "páginasmorre" -->
+          <h2 class="beat__title beat__title--sm">A maioria das páginas <br>morre no primeiro segundo.</h2>
+          <p class="beat__text">
+            <span class="stat" data-count="53" data-suffix="%"><span class="stat__num">0</span><span class="stat__suf">%</span></span>
+            dos visitantes abandonam uma página que demora mais de três segundos para abrir.
+            Você pagou pelo clique. E perdeu antes da primeira palavra.
+          </p>
+        </article>
+
+        <article class="beat beat--3" data-beat="3">
+          <h2 class="beat__title beat__title--sm">A nossa não abre. <br>Ela liga.</h2>
+          <ul class="cards">
+            <li class="card">
+              <p class="card__num"><span class="stat" data-count="9" data-prefix="0," data-suffix=" s"><span class="stat__pre">0,</span><span class="stat__num">0</span><span class="stat__suf"> s</span></span></p>
+              <p class="card__label">até o primeiro conteúdo</p>
+              <p class="card__text">Sem framework pesado, sem script de terceiro carregando na frente do seu texto.</p>
+            </li>
+            <li class="card">
+              <p class="card__num"><span class="stat" data-count="100" data-suffix="/100"><span class="stat__num">0</span><span class="stat__suf">/100</span></span></p>
+              <p class="card__label">no Lighthouse</p>
+              <p class="card__text">Performance, acessibilidade, boas práticas e SEO. Auditado antes de subir, não depois.</p>
+            </li>
+            <li class="card">
+              <p class="card__num"><span class="stat" data-count="7" data-suffix=" dias"><span class="stat__num">0</span><span class="stat__suf"> dias</span></span></p>
+              <p class="card__label">do briefing ao ar</p>
+              <p class="card__text">Domínio, analytics, formulário e WhatsApp ligados e testados na entrega.</p>
+            </li>
+          </ul>
+        </article>
+
+        <article class="beat beat--4" data-beat="4">
+          <p class="beat__kicker">Landing pages que carregam antes do julgamento.</p>
+          <div class="actions">
+            <a class="btn btn--magnet"
+               href="https://wa.me/5500000000000?text=Oi%21%20Vim%20pelo%20site%20da%20Simbionte%20e%20quero%20uma%20landing%20page."
+               target="_blank" rel="noopener" data-magnet>
+              <span class="btn__glow" aria-hidden="true"></span>
+              <span class="btn__label">Quero a minha landing</span>
+            </a>
+            <a class="btn btn--ghost" href="#depois">Ver o que já fizemos</a>
+          </div>
+          <p class="fineprint">Resposta em até 24 h · Orçamento fechado, sem fidelidade</p>
+        </article>
+
+      </div>
+
+      <!-- ── trilho de progresso (o "boot") ── -->
+      <aside class="rail" aria-hidden="true">
+        <span class="rail__line"><span class="rail__fill"></span></span>
+        <span class="rail__label" data-rail-label>toque</span>
+      </aside>
+
+      <!-- ── leitura de quadro ── -->
+      <p class="readout" aria-hidden="true">
+        <span class="readout__k">quadro</span>
+        <span class="readout__v" data-readout>001</span><span class="readout__k">/192</span>
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ depois do hero ══════════════════════ -->
+<section class="after" id="depois">
+  <p class="after__eyebrow">O que vem agora</p>
+  <h2 class="after__title">Três perguntas, e a gente já sabe o que sua página precisa.</h2>
+  <p class="after__text">
+    Quem chega, o que você quer que ele faça e o que hoje atrapalha. É a conversa
+    inteira. O resto é trabalho nosso.
+  </p>
+  <a class="btn" id="contato"
+     href="https://wa.me/5500000000000?text=Oi%21%20Vim%20pelo%20site%20da%20Simbionte%20e%20quero%20uma%20landing%20page."
+     target="_blank" rel="noopener">Chamar no WhatsApp</a>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>© 2026 Simbionte</p>
+  <p>Feito com o mesmo cuidado que a gente vende.</p>
+</footer>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>

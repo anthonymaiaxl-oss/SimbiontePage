@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Simbionte">
+  <rect width="32" height="32" rx="7" fill="#04070c"/>
+  <circle cx="16" cy="16" r="10.5" fill="none" stroke="#3eb8ff" stroke-opacity=".40" stroke-width="1.4"/>
+  <circle cx="16" cy="16" r="7" fill="none" stroke="#3eb8ff" stroke-opacity=".65" stroke-width="1.4"/>
+  <circle cx="16" cy="16" r="4" fill="#9bdcff"/>
+</svg>
