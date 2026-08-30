@@ -27,18 +27,19 @@
   const LAST_T = (FRAMES - 1) / FPS;       // 5.0s — último quadro
 
   /* ── janelas de cada batimento: [entra, entrou, sai, saiu] ────
-     Casadas na mão com a linha do tempo do vídeo do Kling (5s):
+     Casadas na mão com a linha do tempo do 2º vídeo textless do Kling (5s):
        0.00–0.20 mão e anéis no preto puro · 0.22 o globo nasce
-       0.35–0.48 painéis cheios · 0.50–0.78 o túnel · 0.83 a palavra assenta */
+       0.30–0.45 anéis de HUD · 0.45–0.75 painéis orbitando (o "sistema")
+       0.78–0.86 tudo colapsa numa luz · 0.90+ ponto de luz no preto */
   const WINDOWS = [
     /* começa em negativo de propósito: com [0, …] a função devolve 0
        exatamente em p=0 e o hero abria sem título nenhum na tela */
     [-0.100, -0.020, 0.150, 0.210],
-    [ 0.240,  0.300, 0.400, 0.460],
-    [ 0.490,  0.560, 0.700, 0.760],
-    [ 0.820,  0.890, 9.990, 9.999],
+    [ 0.240,  0.300, 0.400, 0.450],
+    [ 0.480,  0.550, 0.700, 0.760],
+    [ 0.830,  0.900, 9.990, 9.999],
   ];
-  const RAIL = [[0.21, 'toque'], [0.47, 'expansão'], [0.73, 'sistema'], [2, 'simbionte']];
+  const RAIL = [[0.21, 'toque'], [0.46, 'expansão'], [0.78, 'sistema'], [2, 'simbionte']];
 
   /* ── utilidades ───────────────────────────────────────────── */
   const clamp  = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -69,7 +70,7 @@
   let magX = 0, magY = 0, magXT = 0, magYT = 0;
   let magRect = null;
   let pointerIn = false, running = false, visible = false;
-  const lastWrite = { p: -1, ignite: -1, focus: -1, wordveil: -1, frame: -1, rail: '' };
+  const lastWrite = { p: -1, ignite: -1, focus: -1, frame: -1, rail: '' };
 
   /* ── o palco ──────────────────────────────────────────────────
      Um caminho só, vídeo, em qualquer aparelho. Antes o celular
@@ -208,26 +209,14 @@
         railLbl.toggleAttribute('data-hot', p >= 0.73);
       }
 
-      /* o wordmark real sobe cedo — entre 0.60 e 0.72 — pra já estar firme
-         quando a palavra do vídeo cruzaria a tela (o vídeo apaga em ~0.71
-         no encode) */
-      const ig = smooth(clamp((p - 0.60) / 0.12, 0, 1));
+      /* o wordmark acende quando o vídeo colapsa na luz (~0.80) e assenta
+         no ponto de luz sobre o preto — a luz "vira" a palavra. O vídeo
+         não tem mais texto, então não há o que tapar: sem véu. */
+      const ig = smooth(clamp((p - 0.80) / 0.13, 0, 1));
       if (Math.abs(ig - lastWrite.ignite) > .004) {
         lastWrite.ignite = ig;
         stage.style.setProperty('--ignite', ig.toFixed(3));
         if (navMark) navMark.style.setProperty('--ignite', ig.toFixed(3));
-      }
-
-      /* o véu tem vida própria: sobe ANTES da palavra (0.52→0.64) pra
-         tapar a palavra do vídeo cruzando, e CAI (0.86→0.94) quando o
-         vídeo já é preto puro — senão fica uma mancha escura no lugar
-         onde não há mais nada pra esconder, bem em cima do "landing
-         pages que carregam..." */
-      const wv = smooth(clamp((p - 0.52) / 0.12, 0, 1)) *
-                 (1 - smooth(clamp((p - 0.86) / 0.08, 0, 1)));
-      if (Math.abs(wv - lastWrite.wordveil) > .004) {
-        lastWrite.wordveil = wv;
-        stage.style.setProperty('--wordveil', wv.toFixed(3));
       }
 
       /* a máscara do vídeo aperta quando o globo entra: na mão (preto puro)

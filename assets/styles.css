@@ -221,15 +221,23 @@ img, video, canvas{ display: block; max-width: 100%; }
      mistura com o fundo do próprio elemento pai. Com esta cor aqui, preto
      de vídeo + fundo da página = fundo da página, e a moldura some. */
   background: var(--bg);
+  /* o parallax do mouse fica aqui; a máscara e o borrão da borda (::after,
+     .stage__vignette) ficam do TAMANHO DA TELA, não da imagem — senão o
+     efeito de borda cai fora do quadro quando o vídeo sangra. */
   transform: translate3d(calc(var(--px, 0) * -14px), calc(var(--py, 0) * -10px), 0);
-  /* `scale` é propriedade separada de `transform` e compõe com ela: o
-     parallax do mouse fica no transform, a respiração fica aqui. É o que
-     impede a cena de congelar quando a rolagem para. */
-  scale: 1.045;
+  will-change: transform;
+}
+/* A imagem sangra para fora da tela (cover + overscan): assim o que o
+   Kling corta na moldura — anéis, painéis — é cortado FORA do quadro, e
+   parece que continua além da página em vez de bater numa aresta reta.
+   A respiração (`scale` animado) vive aqui, compondo com o overscan. */
+.js .stage__poster,
+.js .stage__video{
+  scale: 1.12;
   animation: respira 16s ease-in-out infinite alternate;
   will-change: transform, scale;
 }
-@keyframes respira{ to{ scale: 1.085; } }
+@keyframes respira{ to{ scale: 1.16; } }
 @keyframes respira-sm{ from{ scale: 1.40; } to{ scale: 1.46; } }
 
 /* ── borda que dissolve: o holograma "brota" da página ──────────
@@ -254,11 +262,10 @@ img, video, canvas{ display: block; max-width: 100%; }
 .js .stage__video{
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  /* `contain` sempre. Antes eu usava `cover` e trocava por `contain` em
-     janela estreita para não decepar o SIMBIONTE — o preço era a tarja do
-     letterbox aparecendo. Com o preto transparente a tarja é invisível,
-     então dá para nunca cortar e nunca mostrar moldura. */
-  object-fit: contain;
+  /* `cover` agora: a palavra SIMBIONTE é HTML (não está mais no vídeo),
+     então pode preencher e sangrar. Isso empurra a moldura reta do Kling
+     e os elementos que ela corta para fora da tela. */
+  object-fit: cover;
 }
 /* O holograma é luz sobre preto. Em `screen`, preto não soma nada: some.
    Sobra a luz, direto sobre o fundo da página — sem retângulo, sem borda,
@@ -348,24 +355,6 @@ img, video, canvas{ display: block; max-width: 100%; }
   text-shadow: 0 0 calc(18px + 46px * var(--ignite, 0)) rgba(62, 184, 255, calc(.25 + .45 * var(--ignite, 0)));
   will-change: opacity, transform, filter;
 }
-/* O véu vive à parte do wordmark: ele tem opacidade PRÓPRIA (--wordveil),
-   que sobe antes da palavra e cai quando o vídeo já virou preto puro —
-   assim ele cobre a palavra do vídeo cruzando a tela sem deixar mancha
-   escura depois, quando não há mais nada pra esconder. Dois raios: um
-   largo e suave, um justo e denso colado nas letras. */
-.stage__wordveil{ display: none; }
-.js .stage__wordveil{
-  display: block;
-  position: absolute; left: 50%; top: 48.5%;
-  width: 118vw; height: 44vh;
-  transform: translate(-50%, -50%);
-  z-index: 1; pointer-events: none;
-  opacity: var(--wordveil, 0);
-  background:
-    radial-gradient(ellipse 20% 26% at 50% 50%, rgba(4,7,12,.98) 55%, rgba(4,7,12,0) 100%),
-    radial-gradient(ellipse 44% 46% at 50% 50%, rgba(4,7,12,.95) 40%, rgba(4,7,12,.5) 64%, rgba(4,7,12,0) 82%);
-}
-
 /* ── batimentos ─────────────────────────────────────────────── */
 /* Sem JS os batimentos são só blocos no fluxo do palco.
    Com JS eles viram absolutos — e precisam de um pai que realmente
@@ -587,36 +576,26 @@ img, video, canvas{ display: block; max-width: 100%; }
 
 /* ── celular: o palco encolhe e o texto vai para baixo ──────── */
 @media (max-width: 860px){
-  /* Sem moldura, o palco pode ocupar a tela inteira no celular também: o
-     holograma flutua atrás do texto em vez de morar numa faixa recortada. */
+  /* Sem moldura, o palco ocupa a tela inteira no celular também. */
   .js .stage__media{ inset: 0; height: auto; transform: none; }
-  /* Na largura do celular o holograma cabia inteiro e ficava pequeno —
-     o SIMBIONTE saía com uns 220px e o brilho não tinha onde acontecer.
-     Como o preto é invisível no `screen`, dá para ampliar e deixar o
-     excesso sangrar para fora: só a palavra precisa continuar dentro.
-     Em 1.4x ela dá ~315px numa tela de 375px. */
-  .js .stage__media{ scale: 1.4; animation-name: respira-sm; }
+  /* No celular a imagem sangra bem mais: a cena inteira fica maior que a
+     tela, então a moldura do Kling e o que ela corta ficam bem fora. */
   .js .stage__poster,
-  .js .stage__video{ object-position: center 30%; }
-  /* o brilho da marca tem que ficar ATRÁS da palavra, e no celular ela
-     não está no meio da tela como no desktop */
+  .js .stage__video{
+    scale: 1.5;
+    animation-name: respira-sm;
+    object-position: center 34%;
+  }
   .js .stage__bloom{
-    background: radial-gradient(ellipse 62% 30% at 50% 36%, rgba(62,184,255,.34), transparent 70%);
+    background: radial-gradient(ellipse 62% 30% at 50% 42%, rgba(62,184,255,.34), transparent 70%);
   }
   .js .stage__vignette{
     background: linear-gradient(to bottom, rgba(4,7,12,.62), transparent 26%, transparent 44%, rgba(4,7,12,.92));
   }
-  /* no celular o vídeo está 1.4x e ancorado em "center 30%": a palavra do
-     vídeo sobe para ~28% da tela. A marca real e o véu acompanham. */
   .js .stage__wordmark{
-    top: 27%;
+    top: 44%;
     font-size: clamp(1.85rem, 9vw, 2.6rem);
     letter-spacing: .1em;
-  }
-  .js .stage__wordmark::before{
-    width: 170vw; height: 46vh;
-    background: radial-gradient(ellipse 40% 44% at 50% 50%,
-      rgba(4,7,12,.99) 44%, rgba(4,7,12,.6) 64%, rgba(4,7,12,0) 82%);
   }
   .js .beat{
     top: auto;
