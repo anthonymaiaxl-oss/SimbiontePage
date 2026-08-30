@@ -73,6 +73,21 @@ body{
 
 img, video, canvas{ display: block; max-width: 100%; }
 
+/* ── fundo de água (WebGL) ──────────────────────────────────────
+   Atrás de tudo. Só aparece onde o fundo da seção é translúcido —
+   e só quando o ripple.js consegue ligar (senão .ripple-on nem
+   entra e os fundos ficam sólidos como sempre). */
+#ripple{
+  position: fixed; inset: 0; z-index: -1;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.ripple-on #ripple{ opacity: 1; }
+.ripple-on .after{ background: rgba(4, 7, 12, .5); }
+.ripple-on .foot{ background: rgba(4, 7, 12, .42); }
+
 ::selection{ background: var(--cy); color: #02060b; }
 
 :focus-visible{

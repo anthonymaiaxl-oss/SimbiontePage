@@ -70,6 +70,11 @@
      cliente. Está codificada para URL: %20 é espaço, %21 é "!".
      ══════════════════════════════════════════════════════════════════ -->
 
+<!-- fundo de água em WebGL. Fica atrás de tudo; só desenha quando a
+     seção de baixo / o rodapé aparecem. Some sozinho se não houver WebGL,
+     em movimento reduzido, ou em máquina fraca. Ver assets/ripple.js -->
+<canvas id="ripple" aria-hidden="true"></canvas>
+
 <a class="skip-link" href="#depois">Pular a abertura e ir para o conteúdo</a>
 
 <header class="nav" id="nav">
@@ -255,5 +260,6 @@
 </footer>
 
 <script src="assets/app.js" defer></script>
+<script src="assets/ripple.js" defer></script>
 </body>
 </html>
