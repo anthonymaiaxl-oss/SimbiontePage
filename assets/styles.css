@@ -238,7 +238,7 @@ img, video, canvas{ display: block; max-width: 100%; }
   will-change: transform, scale;
 }
 @keyframes respira{ to{ scale: 1.16; } }
-@keyframes respira-sm{ from{ scale: 1.14; } to{ scale: 1.18; } }
+@keyframes respira-sm{ from{ scale: 1.26; } to{ scale: 1.31; } }
 
 /* ── borda que dissolve: o holograma "brota" da página ──────────
    Um anel só na borda que (1) BORRA o que está atrás — a aresta reta
@@ -589,24 +589,35 @@ img, video, canvas{ display: block; max-width: 100%; }
 /* ── celular: o palco encolhe e o texto vai para baixo ──────── */
 @media (max-width: 860px){
   .js .stage__media{ inset: 0; height: auto; transform: none; }
-  /* No celular (retrato) o `cover` cortaria as laterais do quadro 16:9 e
-     comeria a mão, que entra pela esquerda. Então volta pra `contain`: o
-     quadro inteiro cabe, a mão aparece, e com o `screen` o letterbox é
-     invisível — parece um holograma no meio da tela, não uma faixa. */
+  /* Celular (retrato): `contain` (o quadro 16:9 inteiro cabe, o globo é
+     globo, a mão é mão), ancorado no terço de cima. `cover` estourava o
+     zoom e virava uma bola azul gigante. A faixa fica no alto e uma
+     MÁSCARA elíptica dissolve as bordas dela no preto — sem retângulo,
+     "holograma numa janelinha", não um vídeo colado. Zoom leve pra faixa
+     encher a largura e as laterais dos painéis saírem de tela. */
   .js .stage__poster,
   .js .stage__video{
     object-fit: contain;
-    scale: 1.16;
+    object-position: 50% 26%;
+    scale: 1.28;
     animation-name: respira-sm;
+    -webkit-mask-image: radial-gradient(ellipse 64% 27% at 50% 27%,
+              #000 42%, rgba(0,0,0,.4) 72%, transparent 100%);
+            mask-image: radial-gradient(ellipse 64% 27% at 50% 27%,
+              #000 42%, rgba(0,0,0,.4) 72%, transparent 100%);
   }
   .js .stage__bloom{
-    background: radial-gradient(ellipse 62% 30% at 50% 42%, rgba(62,184,255,.34), transparent 70%);
+    background: radial-gradient(ellipse 66% 24% at 50% 28%, rgba(62,184,255,.30), transparent 72%);
   }
+  /* capô: garante que a metade de baixo é preto limpo pros cartões e a
+     emenda com a seção seguinte não tem costura */
   .js .stage__vignette{
-    background: linear-gradient(to bottom, rgba(4,7,12,.62), transparent 26%, transparent 44%, rgba(4,7,12,.92));
+    background: linear-gradient(to bottom,
+      rgba(4,7,12,.5) 0%, rgba(4,7,12,0) 12%,
+      rgba(4,7,12,0) 34%, rgba(4,7,12,.97) 60%, rgba(4,7,12,1) 100%);
   }
   .js .stage__wordmark{
-    top: 47%;
+    top: 33%;
     font-size: clamp(1.85rem, 9vw, 2.6rem);
     letter-spacing: .1em;
   }
@@ -623,7 +634,7 @@ img, video, canvas{ display: block; max-width: 100%; }
      SIMBIONTE. Antes ele ia para a base junto com os outros e a marca
      ficava sozinha lá em cima, solta. */
   .js .beat--4{
-    top: 52%; bottom: auto;
+    top: 41%; bottom: auto;
     display: flex; flex-direction: column; align-items: center;
     text-align: center;
   }
