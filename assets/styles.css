@@ -238,7 +238,7 @@ img, video, canvas{ display: block; max-width: 100%; }
   will-change: transform, scale;
 }
 @keyframes respira{ to{ scale: 1.16; } }
-@keyframes respira-sm{ from{ scale: 1.40; } to{ scale: 1.46; } }
+@keyframes respira-sm{ from{ scale: 1.14; } to{ scale: 1.18; } }
 
 /* ── borda que dissolve: o holograma "brota" da página ──────────
    Um anel só na borda que (1) BORRA o que está atrás — a aresta reta
@@ -354,6 +354,18 @@ img, video, canvas{ display: block; max-width: 100%; }
   filter: blur(calc((1 - var(--ignite, 0)) * 7px));
   text-shadow: 0 0 calc(18px + 46px * var(--ignite, 0)) rgba(62, 184, 255, calc(.25 + .45 * var(--ignite, 0)));
   will-change: opacity, transform, filter;
+}
+/* Um borrão bem de leve atrás da palavra — só pra tirar o brilho azul
+   solto que o vídeo deixa no centro no fim. Acende COM a palavra (opacidade
+   do pai = --ignite), some com ela. Nada de tarjão. */
+.js .stage__wordmark::before{
+  content: ''; position: absolute; z-index: -1;
+  left: 50%; top: 52%; transform: translate(-50%, -50%);
+  width: 150%; height: 340%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(4,7,12,.86) 34%, rgba(4,7,12,.4) 58%, rgba(4,7,12,0) 80%);
+  filter: blur(24px);
 }
 /* ── batimentos ─────────────────────────────────────────────── */
 /* Sem JS os batimentos são só blocos no fluxo do palco.
@@ -576,15 +588,16 @@ img, video, canvas{ display: block; max-width: 100%; }
 
 /* ── celular: o palco encolhe e o texto vai para baixo ──────── */
 @media (max-width: 860px){
-  /* Sem moldura, o palco ocupa a tela inteira no celular também. */
   .js .stage__media{ inset: 0; height: auto; transform: none; }
-  /* No celular a imagem sangra bem mais: a cena inteira fica maior que a
-     tela, então a moldura do Kling e o que ela corta ficam bem fora. */
+  /* No celular (retrato) o `cover` cortaria as laterais do quadro 16:9 e
+     comeria a mão, que entra pela esquerda. Então volta pra `contain`: o
+     quadro inteiro cabe, a mão aparece, e com o `screen` o letterbox é
+     invisível — parece um holograma no meio da tela, não uma faixa. */
   .js .stage__poster,
   .js .stage__video{
-    scale: 1.5;
+    object-fit: contain;
+    scale: 1.16;
     animation-name: respira-sm;
-    object-position: center 34%;
   }
   .js .stage__bloom{
     background: radial-gradient(ellipse 62% 30% at 50% 42%, rgba(62,184,255,.34), transparent 70%);
@@ -593,7 +606,7 @@ img, video, canvas{ display: block; max-width: 100%; }
     background: linear-gradient(to bottom, rgba(4,7,12,.62), transparent 26%, transparent 44%, rgba(4,7,12,.92));
   }
   .js .stage__wordmark{
-    top: 44%;
+    top: 47%;
     font-size: clamp(1.85rem, 9vw, 2.6rem);
     letter-spacing: .1em;
   }
