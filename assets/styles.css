@@ -630,6 +630,20 @@ img, video, canvas{ display: block; max-width: 100%; }
     width: auto; display: block; text-align: left;
     padding-inline: 0;
   }
+  /* Batimentos 1 e 2 são curtos — ancorados na base ficavam com um vão
+     enorme embaixo do holograma, "quase noutra seção". Puxa pro alto,
+     colado na janela da cena, igual o batimento 3 (que sobe sozinho por
+     causa da altura dos cartões). */
+  .js .beat--1,
+  .js .beat--2{
+    top: 43%; bottom: auto;
+  }
+  .js .beat--1::before,
+  .js .beat--2::before{
+    inset: -14% -14% -34%;
+    background: linear-gradient(to bottom,
+      rgba(4,7,12,0), rgba(4,7,12,.8) 26%, rgba(4,7,12,.92));
+  }
   /* O fecho mantém o desenho do desktop: centralizado, logo abaixo do
      SIMBIONTE. Antes ele ia para a base junto com os outros e a marca
      ficava sozinha lá em cima, solta. */
@@ -652,7 +666,6 @@ img, video, canvas{ display: block; max-width: 100%; }
     background: linear-gradient(to bottom, rgba(4,7,12,0), rgba(4,7,12,.86) 22%);
   }
   .js .beat--4 .actions{ justify-content: flex-start; }
-  .js .beat--1::before,
   .js .beat--4::before{
     inset: -60% -12% -40%;
     background: linear-gradient(to top, rgba(4,7,12,.95) 40%, rgba(4,7,12,0));
