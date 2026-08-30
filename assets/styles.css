@@ -232,6 +232,24 @@ img, video, canvas{ display: block; max-width: 100%; }
 @keyframes respira{ to{ scale: 1.085; } }
 @keyframes respira-sm{ from{ scale: 1.40; } to{ scale: 1.46; } }
 
+/* ── borda que dissolve: o holograma "brota" da página ──────────
+   Um anel só na borda que (1) BORRA o que está atrás — a aresta reta
+   do vídeo perde o contorno — e (2) puxa um degradê da luz azul fraca
+   até o preto da página. O miolo não é tocado. É o que tira a cara de
+   "vídeo rolando ao fundo" e faz o holograma parecer dentro da Hero. */
+.js .stage__media::after{
+  content: ''; position: absolute; inset: 0;
+  pointer-events: none; z-index: 4;
+  -webkit-backdrop-filter: blur(24px);
+          backdrop-filter: blur(24px);
+  -webkit-mask-image: radial-gradient(ellipse 74% 78% at 50% 47%,
+            transparent 38%, rgba(0,0,0,.5) 62%, #000 84%);
+          mask-image: radial-gradient(ellipse 74% 78% at 50% 47%,
+            transparent 38%, rgba(0,0,0,.5) 62%, #000 84%);
+  background: radial-gradient(ellipse 76% 80% at 50% 47%,
+    transparent 42%, rgba(12, 74, 122, .15) 64%, var(--bg) 92%);
+}
+
 .js .stage__poster,
 .js .stage__video{
   position: absolute; inset: 0;
@@ -317,7 +335,7 @@ img, video, canvas{ display: block; max-width: 100%; }
 .stage__wordmark{ display: none; }
 .js .stage__wordmark{
   display: block;
-  position: absolute; left: 50%; top: 49.5%;
+  position: absolute; left: 50%; top: 48.5%;
   margin: 0; z-index: 2; pointer-events: none;
   font-family: var(--f-display); font-weight: 700;
   font-size: clamp(2.1rem, .6rem + 7.2vw, 5.5rem);
@@ -330,15 +348,22 @@ img, video, canvas{ display: block; max-width: 100%; }
   text-shadow: 0 0 calc(18px + 46px * var(--ignite, 0)) rgba(62, 184, 255, calc(.25 + .45 * var(--ignite, 0)));
   will-change: opacity, transform, filter;
 }
-/* o véu que engole a palavra do vídeo (que sai com o "İ" turco). Precisa
-   ser denso e um pouco maior que a palavra, porque a do vídeo entra um
-   pelo abaixo e menor. Fecha bem antes do CTA. */
-.js .stage__wordmark::before{
-  content: ''; position: absolute; z-index: -1;
-  left: 50%; top: 46%; transform: translate(-50%, -50%);
-  width: 96vw; height: 30vh;
-  background: radial-gradient(ellipse 44% 46% at 50% 50%,
-    rgba(4,7,12,.98) 40%, rgba(4,7,12,.55) 62%, rgba(4,7,12,0) 80%);
+/* O véu vive à parte do wordmark: ele tem opacidade PRÓPRIA (--wordveil),
+   que sobe antes da palavra e cai quando o vídeo já virou preto puro —
+   assim ele cobre a palavra do vídeo cruzando a tela sem deixar mancha
+   escura depois, quando não há mais nada pra esconder. Dois raios: um
+   largo e suave, um justo e denso colado nas letras. */
+.stage__wordveil{ display: none; }
+.js .stage__wordveil{
+  display: block;
+  position: absolute; left: 50%; top: 48.5%;
+  width: 118vw; height: 44vh;
+  transform: translate(-50%, -50%);
+  z-index: 1; pointer-events: none;
+  opacity: var(--wordveil, 0);
+  background:
+    radial-gradient(ellipse 20% 26% at 50% 50%, rgba(4,7,12,.98) 55%, rgba(4,7,12,0) 100%),
+    radial-gradient(ellipse 44% 46% at 50% 50%, rgba(4,7,12,.95) 40%, rgba(4,7,12,.5) 64%, rgba(4,7,12,0) 82%);
 }
 
 /* ── batimentos ─────────────────────────────────────────────── */

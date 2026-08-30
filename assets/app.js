@@ -38,7 +38,7 @@
     [ 0.490,  0.560, 0.700, 0.760],
     [ 0.820,  0.890, 9.990, 9.999],
   ];
-  const RAIL = [[0.21, 'toque'], [0.47, 'expansão'], [0.80, 'sistema'], [2, 'simbionte']];
+  const RAIL = [[0.21, 'toque'], [0.47, 'expansão'], [0.73, 'sistema'], [2, 'simbionte']];
 
   /* ── utilidades ───────────────────────────────────────────── */
   const clamp  = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -69,7 +69,7 @@
   let magX = 0, magY = 0, magXT = 0, magYT = 0;
   let magRect = null;
   let pointerIn = false, running = false, visible = false;
-  const lastWrite = { p: -1, ignite: -1, focus: -1, frame: -1, rail: '' };
+  const lastWrite = { p: -1, ignite: -1, focus: -1, wordveil: -1, frame: -1, rail: '' };
 
   /* ── o palco ──────────────────────────────────────────────────
      Um caminho só, vídeo, em qualquer aparelho. Antes o celular
@@ -205,15 +205,29 @@
       if (lbl !== lastWrite.rail) {
         lastWrite.rail = lbl;
         railLbl.textContent = lbl;
-        railLbl.toggleAttribute('data-hot', p >= 0.8);
+        railLbl.toggleAttribute('data-hot', p >= 0.73);
       }
 
-      // o brilho da marca sobe junto com o wordmark, que assenta em ~0.83
-      const ig = smooth(clamp((p - 0.80) / 0.17, 0, 1));
+      /* o wordmark real sobe cedo — entre 0.60 e 0.72 — pra já estar firme
+         quando a palavra do vídeo cruzaria a tela (o vídeo apaga em ~0.71
+         no encode) */
+      const ig = smooth(clamp((p - 0.60) / 0.12, 0, 1));
       if (Math.abs(ig - lastWrite.ignite) > .004) {
         lastWrite.ignite = ig;
         stage.style.setProperty('--ignite', ig.toFixed(3));
         if (navMark) navMark.style.setProperty('--ignite', ig.toFixed(3));
+      }
+
+      /* o véu tem vida própria: sobe ANTES da palavra (0.52→0.64) pra
+         tapar a palavra do vídeo cruzando, e CAI (0.86→0.94) quando o
+         vídeo já é preto puro — senão fica uma mancha escura no lugar
+         onde não há mais nada pra esconder, bem em cima do "landing
+         pages que carregam..." */
+      const wv = smooth(clamp((p - 0.52) / 0.12, 0, 1)) *
+                 (1 - smooth(clamp((p - 0.86) / 0.08, 0, 1)));
+      if (Math.abs(wv - lastWrite.wordveil) > .004) {
+        lastWrite.wordveil = wv;
+        stage.style.setProperty('--wordveil', wv.toFixed(3));
       }
 
       /* a máscara do vídeo aperta quando o globo entra: na mão (preto puro)

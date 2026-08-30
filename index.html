@@ -184,6 +184,11 @@
 
       </div>
 
+      <!-- o véu: escurece a faixa central só enquanto a palavra do vídeo
+           está passando (ela apaga no encode, mas cruza a tela por ~0,5s).
+           Some quando o vídeo já é preto puro, pra não deixar mancha. -->
+      <div class="stage__wordveil" aria-hidden="true"></div>
+
       <!-- a marca, escrita de verdade. Cobre o wordmark do vídeo — que a IA
            gerou com o "İ" pingado do turco ("SİMBİONTE") — e ainda dá
            controle de nitidez e de quando a palavra acende. -->
