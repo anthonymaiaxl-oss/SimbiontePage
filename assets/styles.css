@@ -85,50 +85,54 @@ img, video, canvas{ display: block; max-width: 100%; }
    `transform` anima, o `blur` é calculado uma vez: barato.
    O SIMBIONTE e o título da seção 2 reagem a ela (mix-blend-mode). */
 .mesh{
-  position: fixed; inset: -40%;
+  position: fixed; inset: -12%;
   z-index: -1; pointer-events: none;
+  /* blobs GRANDES e sobrepostos, um deles GRUDADO no centro (55% de raio
+     em 50%/50%) — o miolo da tela nunca cai no vão entre eles. */
   background:
-    radial-gradient(40% 48% at 25% 30%, rgba(62,184,255,.55), transparent 60%),
-    radial-gradient(44% 40% at 80% 18%, rgba(14,92,150,.72), transparent 66%),
-    radial-gradient(32% 36% at 60% 62%, rgba(150,220,255,.38), transparent 58%);
-  filter: blur(54px) saturate(1.2);
-  animation: mesh-a 26s linear infinite;
+    radial-gradient(70% 66% at 50% 50%, rgba(46,150,225,.5), transparent 78%),
+    radial-gradient(60% 60% at 26% 30%, rgba(62,184,255,.6), transparent 72%),
+    radial-gradient(58% 55% at 80% 24%, rgba(16,96,155,.72), transparent 74%);
+  filter: blur(52px) saturate(1.2);
+  animation: mesh-a 24s linear infinite;
   will-change: transform;
 }
 .mesh::before, .mesh::after{
-  content: ''; position: absolute; inset: 0;
+  content: ''; position: absolute; inset: -10%;
 }
 .mesh::before{
   background:
-    radial-gradient(48% 42% at 72% 80%, rgba(62,184,255,.44), transparent 64%),
-    radial-gradient(36% 46% at 18% 82%, rgba(165,225,255,.32), transparent 60%);
-  filter: blur(62px);
-  animation: mesh-b 34s linear infinite;
+    radial-gradient(64% 58% at 68% 74%, rgba(62,184,255,.5), transparent 72%),
+    radial-gradient(56% 60% at 24% 70%, rgba(170,228,255,.42), transparent 72%);
+  filter: blur(58px);
+  animation: mesh-b 31s linear infinite;
 }
 .mesh::after{
   background:
-    radial-gradient(32% 32% at 46% 20%, rgba(175,235,255,.36), transparent 55%),
-    radial-gradient(38% 42% at 88% 58%, rgba(26,130,195,.5), transparent 62%);
-  filter: blur(48px);
-  animation: mesh-c 21s linear infinite;
+    radial-gradient(58% 52% at 44% 30%, rgba(180,235,255,.44), transparent 68%),
+    radial-gradient(60% 56% at 82% 62%, rgba(28,135,200,.56), transparent 72%);
+  filter: blur(44px);
+  animation: mesh-c 19s linear infinite;
 }
+/* movimento contido (±8%) pra os blobs nunca deixarem o centro no escuro,
+   mas ainda churnando de forma visível via rotação + escala */
 @keyframes mesh-a{
-  0%   { transform: translate3d(-14%, -8%, 0)  scale(1.1)  rotate(0deg); }
-  25%  { transform: translate3d(10%, -14%, 0)  scale(1.45) rotate(90deg); }
-  50%  { transform: translate3d(16%, 12%, 0)   scale(1.12) rotate(180deg); }
-  75%  { transform: translate3d(-12%, 15%, 0)  scale(1.4)  rotate(270deg); }
-  100% { transform: translate3d(-14%, -8%, 0)  scale(1.1)  rotate(360deg); }
+  0%   { transform: translate3d(-7%, -4%, 0)  scale(1.12) rotate(0deg); }
+  25%  { transform: translate3d(5%, -7%, 0)   scale(1.34) rotate(90deg); }
+  50%  { transform: translate3d(8%, 6%, 0)    scale(1.12) rotate(180deg); }
+  75%  { transform: translate3d(-6%, 8%, 0)   scale(1.32) rotate(270deg); }
+  100% { transform: translate3d(-7%, -4%, 0)  scale(1.12) rotate(360deg); }
 }
 @keyframes mesh-b{
-  0%   { transform: translate3d(12%, 10%, 0)   scale(1.3)  rotate(0deg); }
-  33%  { transform: translate3d(-16%, 4%, 0)   scale(1.05) rotate(-120deg); }
-  66%  { transform: translate3d(-4%, -16%, 0)  scale(1.4)  rotate(-240deg); }
-  100% { transform: translate3d(12%, 10%, 0)   scale(1.3)  rotate(-360deg); }
+  0%   { transform: translate3d(6%, 5%, 0)    scale(1.25) rotate(0deg); }
+  33%  { transform: translate3d(-8%, 2%, 0)   scale(1.08) rotate(-120deg); }
+  66%  { transform: translate3d(-2%, -8%, 0)  scale(1.3)  rotate(-240deg); }
+  100% { transform: translate3d(6%, 5%, 0)    scale(1.25) rotate(-360deg); }
 }
 @keyframes mesh-c{
-  0%   { transform: translate3d(6%, -12%, 0)   scale(1.0)  rotate(0deg); }
-  50%  { transform: translate3d(-14%, 14%, 0)  scale(1.35) rotate(180deg); }
-  100% { transform: translate3d(6%, -12%, 0)   scale(1.0)  rotate(360deg); }
+  0%   { transform: translate3d(3%, -6%, 0)   scale(1.05) rotate(0deg); }
+  50%  { transform: translate3d(-7%, 7%, 0)   scale(1.3)  rotate(180deg); }
+  100% { transform: translate3d(3%, -6%, 0)   scale(1.05) rotate(360deg); }
 }
 @media (prefers-reduced-motion: reduce){
   .mesh, .mesh::before, .mesh::after{ animation: none; }
@@ -284,7 +288,9 @@ img, video, canvas{ display: block; max-width: 100%; }
      aparece de verdade atrás e a palavra reage a ela. O `screen` do
      vídeo continua funcionando: 90% da cor da página ainda é a
      referência da mistura. */
-  background: rgba(4, 7, 12, calc(.9 - .5 * var(--ignite, 0)));
+  /* OPACO durante o vídeo (hero preto, sem malha vazando) → .4 no fim
+     (a malha aparece, exatamente como a seção de baixo). */
+  background: rgba(4, 7, 12, calc(1 - .6 * var(--ignite, 0)));
   /* o parallax do mouse fica aqui; a máscara e o borrão da borda (::after,
      .stage__vignette) ficam do TAMANHO DA TELA, não da imagem — senão o
      efeito de borda cai fora do quadro quando o vídeo sangra. */
@@ -321,9 +327,9 @@ img, video, canvas{ display: block; max-width: 100%; }
   background: radial-gradient(ellipse 76% 80% at 50% 47%,
     transparent 42%, rgba(12, 74, 122, .15) 64%, var(--bg) 92%);
   /* borda só serve enquanto o vídeo tem aresta pra dissolver. No fim
-     (vídeo preto, SIMBIONTE na tela) ela some — senão pinta a base do
-     hero de preto opaco e cria a costura com a seção de baixo. */
-  opacity: calc(1 - .92 * var(--ignite, 0));
+     (vídeo preto, SIMBIONTE na tela) ela SOME por completo — o hero
+     fica só com o véu .4 do .stage__media, igualzinho à seção de baixo. */
+  opacity: calc(1 - var(--ignite, 0));
 }
 
 .js .stage__poster,
@@ -334,6 +340,9 @@ img, video, canvas{ display: block; max-width: 100%; }
      então pode preencher e sangrar. Isso empurra a moldura reta do Kling
      e os elementos que ela corta para fora da tela. */
   object-fit: cover;
+  /* o vídeo SOME por completo quando a cena colapsa — não fica resto
+     nenhum. Aí o hero é só o véu .4 sobre a malha, igual à seção de baixo. */
+  opacity: calc(1 - var(--ignite, 0));
 }
 /* O holograma é luz sobre preto. Em `screen`, preto não soma nada: some.
    Sobra a luz, direto sobre o fundo da página — sem retângulo, sem borda,
@@ -424,26 +433,27 @@ img, video, canvas{ display: block; max-width: 100%; }
   color: #dcefff;
   white-space: nowrap;
   opacity: var(--ignite, 0);
-  transform: translate(-50%, -50%) scale(calc(.965 + .035 * var(--ignite, 0)));
+  /* três propriedades separadas que compõem: transform = centraliza;
+     scale = a "respiração" do acender; translate/rotate = a deriva lenta,
+     que faz a palavra FLUIR de leve junto com o fundo (o Luiz achou
+     estático demais). */
+  transform: translate(-50%, -50%);
+  scale: calc(.965 + .035 * var(--ignite, 0));
+  translate: 0 0;
   filter: blur(calc((1 - var(--ignite, 0)) * 7px));
   text-shadow: 0 0 calc(8px + 26px * var(--ignite, 0)) rgba(62, 184, 255, calc(.18 + .28 * var(--ignite, 0)));
   /* quando o vídeo acaba e a malha aparece atrás, a palavra reage a ela —
      clareia sobre os blobs, recolhe no vão. `screen` mantém legível. */
   mix-blend-mode: screen;
-  will-change: opacity, transform, filter;
+  animation: wm-float 11s ease-in-out infinite;
+  will-change: opacity, transform, translate, filter;
 }
-/* Um borrão bem de leve atrás da palavra — só pra tirar o brilho azul
-   solto que o vídeo deixa no centro no fim. Acende COM a palavra (opacidade
-   do pai = --ignite), some com ela. Nada de tarjão. */
-.js .stage__wordmark::before{
-  content: ''; position: absolute; z-index: -1;
-  left: 50%; top: 52%; transform: translate(-50%, -50%);
-  width: 150%; height: 340%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%,
-    rgba(4,7,12,.86) 34%, rgba(4,7,12,.4) 58%, rgba(4,7,12,0) 80%);
-  filter: blur(24px);
+@keyframes wm-float{
+  0%, 100% { translate: 0 0;        rotate: 0deg; }
+  30%      { translate: .9% -1.6%;  rotate: .35deg; }
+  62%      { translate: -.7% 1.1%;  rotate: -.3deg; }
 }
+@media (prefers-reduced-motion: reduce){ .js .stage__wordmark{ animation: none; } }
 /* ── batimentos ─────────────────────────────────────────────── */
 /* Sem JS os batimentos são só blocos no fluxo do palco.
    Com JS eles viram absolutos — e precisam de um pai que realmente
@@ -715,13 +725,12 @@ img, video, canvas{ display: block; max-width: 100%; }
 
 /* ── depois do hero ─────────────────────────────────────────── */
 .after{
-  position: relative; z-index: 1; overflow: hidden;
+  position: relative; z-index: 1;
   padding: clamp(6rem, 13vh, 9.5rem) var(--gut);
-  /* topo e base no tom escuro do hero, MIOLO abre pra malha aparecer.
-     A transição pro hero cai dentro desse degradê — sem aresta. */
-  background: linear-gradient(to bottom,
-    rgba(4,7,12,.62) 0%, rgba(4,7,12,.36) 26%,
-    rgba(4,7,12,.36) 74%, rgba(4,7,12,.62) 100%);
+  /* EXATAMENTE o mesmo véu do fim do hero (.4 sobre a malha). Hero e
+     seção são a mesma superfície — a malha atravessa as duas igual,
+     sem tom diferente, sem aresta. */
+  background: rgba(4, 7, 12, .4);
   text-align: center;
   /* Sem `content-visibility: auto` aqui de propósito: quando a seção
      saía de vista ela voltava ao tamanho estimado, o documento
@@ -739,46 +748,6 @@ img, video, canvas{ display: block; max-width: 100%; }
   font-family: var(--f-mono); font-size: .75rem;
   letter-spacing: .1em; color: var(--ink-3);
 }
-/* fonte de luz atrás do texto — de onde os feixes "brotam" (bem de leve;
-   a malha já dá a maior parte da luz) */
-.after__body::before{
-  content: ''; position: absolute; z-index: -1;
-  left: 50%; top: 44%; transform: translate(-50%, -50%);
-  width: 70vw; height: 46vh;
-  background: radial-gradient(ellipse 42% 44% at 50% 50%, rgba(62,184,255,.10), transparent 72%);
-  pointer-events: none;
-}
-
-/* Feixes holográficos: linhas azuis finas que se desenham do centro pra
-   fora e se apagam, em loop com atrasos variados. Mesmíssima linguagem de
-   luz do hero — com `screen` viram luz, não uma camada colada — e é o que
-   faz a página parecer uma coisa só, não blocos separados. */
-.after__beams{
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; z-index: 0;
-  mix-blend-mode: screen;
-  filter: drop-shadow(0 0 4px rgba(62, 184, 255, .55));
-  /* concentrados ATRÁS do texto (centro), dissolvendo pras bordas */
-  -webkit-mask-image: radial-gradient(ellipse 60% 58% at 50% 46%, #000 30%, rgba(0,0,0,.4) 62%, transparent 100%);
-          mask-image: radial-gradient(ellipse 60% 58% at 50% 46%, #000 30%, rgba(0,0,0,.4) 62%, transparent 100%);
-}
-.after__beams path{
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 26 900;
-  stroke-dashoffset: 900;
-  opacity: 0;
-  animation: beam-draw var(--dur, 12s) linear var(--delay, 0s) infinite;
-}
-@keyframes beam-draw{
-  0%   { stroke-dashoffset: 900; opacity: 0; }
-  10%  { opacity: 1; }
-  58%  { opacity: 1; }
-  100% { stroke-dashoffset: 0; opacity: 0; }
-}
-
 .after__eyebrow{
   display: inline-flex; align-items: center; gap: .625rem;
   margin: 0 0 1.5rem;
@@ -810,6 +779,7 @@ img, video, canvas{ display: block; max-width: 100%; }
   background: rgba(4, 7, 12, .4);
   font-size: .875rem; color: var(--ink-3);
 }
+@media (prefers-reduced-motion: reduce){ .after, .foot{ background: var(--bg); } }
 .foot p{ margin: 0; }
 
 /* ── quem pediu menos movimento recebe a página, não o filme ── */
