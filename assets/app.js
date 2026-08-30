@@ -70,7 +70,7 @@
   let magX = 0, magY = 0, magXT = 0, magYT = 0;
   let magRect = null;
   let pointerIn = false, running = false, visible = false;
-  const lastWrite = { p: -1, ignite: -1, focus: -1, frame: -1, rail: '' };
+  const lastWrite = { p: -1, ignite: -1, focus: -1, bloom: -1, frame: -1, rail: '' };
 
   /* ── o palco ──────────────────────────────────────────────────
      Um caminho só, vídeo, em qualquer aparelho. Antes o celular
@@ -217,6 +217,15 @@
         lastWrite.ignite = ig;
         stage.style.setProperty('--ignite', ig.toFixed(3));
         if (navMark) navMark.style.setProperty('--ignite', ig.toFixed(3));
+      }
+
+      /* o brilho azul de fundo entra com a palavra mas CAI de volta a zero
+         no fim — o Luiz quer só a escrita SIMBIONTE quando o vídeo acaba,
+         nada solto atrás */
+      const bl = ig * (1 - smooth(clamp((p - 0.93) / 0.06, 0, 1)));
+      if (Math.abs(bl - lastWrite.bloom) > .004) {
+        lastWrite.bloom = bl;
+        stage.style.setProperty('--bloom', bl.toFixed(3));
       }
 
       /* a máscara do vídeo aperta quando o globo entra: na mão (preto puro)
