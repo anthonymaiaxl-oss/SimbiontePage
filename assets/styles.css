@@ -73,20 +73,55 @@ body{
 
 img, video, canvas{ display: block; max-width: 100%; }
 
-/* ── fundo de água (WebGL) ──────────────────────────────────────
-   Atrás de tudo. Só aparece onde o fundo da seção é translúcido —
-   e só quando o ripple.js consegue ligar (senão .ripple-on nem
-   entra e os fundos ficam sólidos como sempre). */
-#ripple{
-  position: fixed; inset: 0; z-index: -1;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 1.2s ease;
+/* ── malha de gradiente (fundo de toda a página) ────────────────
+   Blobs de luz azul-neon, borrados, fluindo devagar. Três camadas
+   (elemento + ::before + ::after) em velocidades e sentidos
+   diferentes — juntas parecem líquido. Só `transform` anima, o
+   `blur` é calculado uma vez: barato, roda em qualquer aparelho.
+   O texto do hero e da seção 2 reage a ela (mix-blend-mode). */
+.mesh{
+  position: fixed; inset: -30%;
+  z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(38% 46% at 22% 28%, rgba(62,184,255,.44), transparent 60%),
+    radial-gradient(42% 38% at 82% 16%, rgba(12,86,140,.62), transparent 66%),
+    radial-gradient(30% 34% at 58% 52%, rgba(140,215,255,.30), transparent 58%);
+  filter: blur(58px) saturate(1.15);
+  animation: mesh-a 38s ease-in-out infinite alternate;
+  will-change: transform;
 }
-.ripple-on #ripple{ opacity: 1; }
-.ripple-on .after{ background: rgba(4, 7, 12, .5); }
-.ripple-on .foot{ background: rgba(4, 7, 12, .42); }
+.mesh::before, .mesh::after{
+  content: ''; position: absolute; inset: 0;
+}
+.mesh::before{
+  background:
+    radial-gradient(46% 40% at 74% 82%, rgba(62,184,255,.34), transparent 64%),
+    radial-gradient(34% 44% at 20% 84%, rgba(155,220,255,.26), transparent 60%);
+  filter: blur(66px);
+  animation: mesh-b 47s ease-in-out infinite alternate;
+}
+.mesh::after{
+  background:
+    radial-gradient(30% 30% at 48% 22%, rgba(165,230,255,.28), transparent 55%),
+    radial-gradient(36% 40% at 88% 60%, rgba(24,120,185,.40), transparent 62%);
+  filter: blur(54px);
+  animation: mesh-c 31s ease-in-out infinite alternate;
+}
+@keyframes mesh-a{
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1.06) rotate(0deg); }
+  100% { transform: translate3d(3%, 2%, 0)  scale(1.2)  rotate(5deg); }
+}
+@keyframes mesh-b{
+  0%   { transform: translate3d(2%, 3%, 0)  scale(1.15) rotate(2deg); }
+  100% { transform: translate3d(-4%, -1%, 0) scale(1.02) rotate(-6deg); }
+}
+@keyframes mesh-c{
+  0%   { transform: translate3d(1%, -3%, 0) scale(1.0)  rotate(-3deg); }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.18) rotate(4deg); }
+}
+@media (prefers-reduced-motion: reduce){
+  .mesh, .mesh::before, .mesh::after{ animation: none; }
+}
 
 ::selection{ background: var(--cy); color: #02060b; }
 
@@ -232,10 +267,13 @@ img, video, canvas{ display: block; max-width: 100%; }
 .js .stage__media{
   position: absolute; inset: 0;
   border: 0; border-radius: 0;
-  /* Precisa ter a COR DA PÁGINA, não ser transparente: o `screen` abaixo
-     mistura com o fundo do próprio elemento pai. Com esta cor aqui, preto
-     de vídeo + fundo da página = fundo da página, e a moldura some. */
-  background: var(--bg);
+  /* O fundo é quase opaco durante o vídeo (a malha de gradiente só
+     vaza um fio, "mais fraco" como o Luiz pediu) e ABRE conforme
+     --ignite — quando o vídeo acaba e sobra só o SIMBIONTE, a malha
+     aparece de verdade atrás e a palavra reage a ela. O `screen` do
+     vídeo continua funcionando: 90% da cor da página ainda é a
+     referência da mistura. */
+  background: rgba(4, 7, 12, calc(.9 - .48 * var(--ignite, 0)));
   /* o parallax do mouse fica aqui; a máscara e o borrão da borda (::after,
      .stage__vignette) ficam do TAMANHO DA TELA, não da imagem — senão o
      efeito de borda cai fora do quadro quando o vídeo sangra. */
@@ -363,12 +401,15 @@ img, video, canvas{ display: block; max-width: 100%; }
   font-family: var(--f-display); font-weight: 700;
   font-size: clamp(2.1rem, .6rem + 7.2vw, 5.5rem);
   letter-spacing: .12em; text-transform: uppercase;
-  color: var(--ink);
+  color: #dcefff;
   white-space: nowrap;
   opacity: var(--ignite, 0);
   transform: translate(-50%, -50%) scale(calc(.965 + .035 * var(--ignite, 0)));
   filter: blur(calc((1 - var(--ignite, 0)) * 7px));
   text-shadow: 0 0 calc(8px + 26px * var(--ignite, 0)) rgba(62, 184, 255, calc(.18 + .28 * var(--ignite, 0)));
+  /* quando o vídeo acaba e a malha aparece atrás, a palavra reage a ela —
+     clareia sobre os blobs, recolhe no vão. `screen` mantém legível. */
+  mix-blend-mode: screen;
   will-change: opacity, transform, filter;
 }
 /* Um borrão bem de leve atrás da palavra — só pra tirar o brilho azul
@@ -562,46 +603,6 @@ img, video, canvas{ display: block; max-width: 100%; }
   letter-spacing: .1em; color: var(--ink-3);
 }
 
-/* ── trilho de progresso ────────────────────────────────────── */
-.rail{ display: none; }
-.js .rail{
-  position: absolute; left: calc(var(--gut) * .42); top: 50%;
-  transform: translateY(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 1rem;
-  pointer-events: none;
-}
-.rail__line{
-  position: relative; width: 1px; height: 26svh;
-  background: var(--line-2);
-}
-.rail__fill{
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, var(--cy-hi), var(--cy));
-  transform: scaleY(var(--p, 0)); transform-origin: top;
-  box-shadow: 0 0 12px rgba(62,184,255,.8);
-}
-.rail__label{
-  font-family: var(--f-mono); font-size: .625rem;
-  letter-spacing: .22em; text-transform: uppercase; color: var(--ink-3);
-  writing-mode: vertical-rl;
-  transition: color var(--dur-3) var(--ease);
-}
-.rail__label[data-hot]{ color: var(--cy-hi); }
-@media (max-width: 900px){ .js .rail{ display: none; } }
-
-/* ── leitura de quadro ──────────────────────────────────────── */
-.readout{ display: none; }
-.js .readout{
-  position: absolute; right: var(--gut); bottom: 2.25rem;
-  display: flex; align-items: baseline; gap: .375rem;
-  margin: 0; pointer-events: none;
-  font-family: var(--f-mono); font-size: .6875rem;
-  letter-spacing: .14em; text-transform: uppercase;
-}
-.readout__k{ color: var(--ink-3); }
-.readout__v{ color: var(--cy-hi); font-variant-numeric: tabular-nums; }
-@media (max-width: 900px){ .js .readout{ display: none; } }
-
 /* ── celular: o palco encolhe e o texto vai para baixo ──────── */
 @media (max-width: 860px){
   .js .stage__media{ inset: 0; height: auto; transform: none; }
@@ -695,19 +696,36 @@ img, video, canvas{ display: block; max-width: 100%; }
 /* ── depois do hero ─────────────────────────────────────────── */
 .after{
   position: relative; z-index: 1; overflow: hidden;
-  padding: clamp(6rem, 14vh, 10rem) var(--gut);
-  background: var(--bg);
+  padding: clamp(6rem, 13vh, 9.5rem) var(--gut);
+  /* topo começa na cor exata do hero (sem costura) e ABRE pra deixar a
+     malha de gradiente aparecer no miolo. Sem faixa preta, sem margem. */
+  background: linear-gradient(to bottom,
+    var(--bg) 0%, var(--bg) 5%, rgba(4,7,12,.5) 22%,
+    rgba(4,7,12,.5) 78%, var(--bg) 100%);
+  text-align: center;
   /* Sem `content-visibility: auto` aqui de propósito: quando a seção
      saía de vista ela voltava ao tamanho estimado, o documento
      encolhia e o navegador reancorava a rolagem — dava salto de
      algumas centenas de px no meio do hero. Numa seção curta o
      ganho não paga o defeito. */
 }
-.after__body{ position: relative; z-index: 2; max-width: 40rem; }
+.after__body{
+  position: relative; z-index: 2;
+  max-width: 44rem; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center;
+}
 .after__fine{
   margin: 1.25rem 0 0;
   font-family: var(--f-mono); font-size: .75rem;
   letter-spacing: .1em; color: var(--ink-3);
+}
+/* fonte de luz atrás do texto — de onde os feixes "brotam" */
+.after__body::before{
+  content: ''; position: absolute; z-index: -1;
+  left: 50%; top: 46%; transform: translate(-50%, -50%);
+  width: 80vw; height: 60vh;
+  background: radial-gradient(ellipse 40% 42% at 50% 50%, rgba(62,184,255,.18), transparent 70%);
+  pointer-events: none;
 }
 
 /* Feixes holográficos: linhas azuis finas que se desenham do centro pra
@@ -719,9 +737,10 @@ img, video, canvas{ display: block; max-width: 100%; }
   width: 124%; height: 150%;
   pointer-events: none; z-index: 0;
   mix-blend-mode: screen;
-  filter: drop-shadow(0 0 4px rgba(62, 184, 255, .5));
-  -webkit-mask-image: radial-gradient(ellipse 68% 62% at 50% 34%, #000 34%, rgba(0,0,0,.4) 66%, transparent 100%);
-          mask-image: radial-gradient(ellipse 68% 62% at 50% 34%, #000 34%, rgba(0,0,0,.4) 66%, transparent 100%);
+  filter: drop-shadow(0 0 4px rgba(62, 184, 255, .55));
+  /* concentrados ATRÁS do texto (centro), dissolvendo pras bordas */
+  -webkit-mask-image: radial-gradient(ellipse 60% 58% at 50% 46%, #000 30%, rgba(0,0,0,.4) 62%, transparent 100%);
+          mask-image: radial-gradient(ellipse 60% 58% at 50% 46%, #000 30%, rgba(0,0,0,.4) 62%, transparent 100%);
 }
 .after__beams path{
   fill: none;
@@ -739,33 +758,35 @@ img, video, canvas{ display: block; max-width: 100%; }
   100% { stroke-dashoffset: 0; opacity: 0; }
 }
 
-/* emenda com o hero: o topo desta seção é preto sólido que dissolve pra
-   baixo — qualquer costura entre o fim do hero e aqui some no degradê */
-.after::before{
-  content: ''; position: absolute; left: 0; right: 0; top: 0;
-  height: 40svh; z-index: 0; pointer-events: none;
-  background: linear-gradient(to bottom, var(--bg) 8%, rgba(4,7,12,0));
-}
 .after__eyebrow{
   display: inline-flex; align-items: center; gap: .625rem;
-  margin: 0 0 1.25rem;
+  margin: 0 0 1.5rem;
   font-family: var(--f-mono); font-size: .75rem;
   letter-spacing: .2em; text-transform: uppercase; color: var(--cy-hi);
 }
 .after__title{
-  margin: 0 0 1.25rem;
+  margin: 0 0 1.5rem;
   font-family: var(--f-display); font-weight: 700;
-  font-size: clamp(2rem, 1.2rem + 3.4vw, 3.5rem);
-  line-height: 1.04; letter-spacing: -.03em; text-wrap: balance;
+  font-size: clamp(2.15rem, 1.2rem + 4vw, 4rem);
+  line-height: 1.02; letter-spacing: -.035em; text-wrap: balance;
+  /* reage à malha atrás — ganha brilho sobre os blobs — mas `screen`
+     nunca deixa ilegível (título de venda tem que ler sempre) */
+  color: #e8f3ff;
+  mix-blend-mode: screen;
+  text-shadow: 0 1px 30px rgba(4, 7, 12, .5);
 }
-.after__text{ margin: 0 0 2.25rem; color: var(--ink-2); max-width: 44ch; text-wrap: pretty; }
+.after__text{
+  margin: 0 auto 2.5rem; max-width: 42ch;
+  color: var(--ink-2); text-wrap: pretty;
+}
 
 .foot{
+  position: relative; z-index: 1;
   display: flex; flex-wrap: wrap; gap: 1rem 2rem;
   justify-content: space-between;
   padding: 2rem var(--gut) 3rem;
   border-top: 1px solid var(--line-2);
-  background: var(--bg);
+  background: rgba(4, 7, 12, .55);
   font-size: .875rem; color: var(--ink-3);
 }
 .foot p{ margin: 0; }
@@ -798,7 +819,6 @@ img, video, canvas{ display: block; max-width: 100%; }
   .js .beat--4 .actions{ justify-content: flex-start; }
   .js .beat--1::before, .js .beat--2::before,
   .js .beat--3::before, .js .beat--4::before{ display: none; }
-  .js .rail, .js .readout{ display: none; }
   .beat__title [data-w]{ transform: none; opacity: 1; filter: none; transition: none; }
   .cue__rule::after{ animation: none; }
   *, *::before, *::after{

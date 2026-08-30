@@ -70,10 +70,10 @@
      cliente. Está codificada para URL: %20 é espaço, %21 é "!".
      ══════════════════════════════════════════════════════════════════ -->
 
-<!-- fundo de água em WebGL. Fica atrás de tudo; só desenha quando a
-     seção de baixo / o rodapé aparecem. Some sozinho se não houver WebGL,
-     em movimento reduzido, ou em máquina fraca. Ver assets/ripple.js -->
-<canvas id="ripple" aria-hidden="true"></canvas>
+<!-- malha de gradiente: blobs de luz azul-neon fluindo devagar atrás de
+     TODA a página. CSS puro (só transform anima) — leve, roda em qualquer
+     lugar. Congela em prefers-reduced-motion. -->
+<div class="mesh" aria-hidden="true"></div>
 
 <a class="skip-link" href="#depois">Pular a abertura e ir para o conteúdo</a>
 
@@ -193,18 +193,6 @@
            quando a cena colapsa na luz — a luz vira a palavra. -->
       <p class="stage__wordmark" aria-hidden="true">Simbionte</p>
 
-      <!-- ── trilho de progresso (o "boot") ── -->
-      <aside class="rail" aria-hidden="true">
-        <span class="rail__line"><span class="rail__fill"></span></span>
-        <span class="rail__label" data-rail-label>toque</span>
-      </aside>
-
-      <!-- ── leitura de quadro ── -->
-      <p class="readout" aria-hidden="true">
-        <span class="readout__k">quadro</span>
-        <span class="readout__v" data-readout>001</span><span class="readout__k">/121</span>
-      </p>
-
     </div>
   </div>
 </section>
@@ -260,6 +248,5 @@
 </footer>
 
 <script src="assets/app.js" defer></script>
-<script src="assets/ripple.js" defer></script>
 </body>
 </html>

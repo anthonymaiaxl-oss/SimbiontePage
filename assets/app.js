@@ -15,9 +15,6 @@
   const track   = hero.querySelector('.hero__track');
   const stage   = hero.querySelector('.hero__stage');
   const video   = hero.querySelector('.stage__video');
-  const railFill= hero.querySelector('.rail__fill');
-  const railLbl = hero.querySelector('[data-rail-label]');
-  const readout = hero.querySelector('[data-readout]');
   const beatEls = [...hero.querySelectorAll('.beat')];
   const magnet  = hero.querySelector('[data-magnet]');
   const magGlow = magnet && magnet.querySelector('.btn__glow');
@@ -39,13 +36,11 @@
     [ 0.480,  0.550, 0.700, 0.760],
     [ 0.830,  0.900, 9.990, 9.999],
   ];
-  const RAIL = [[0.21, 'toque'], [0.46, 'expansão'], [0.78, 'sistema'], [2, 'simbionte']];
 
   /* ── utilidades ───────────────────────────────────────────── */
   const clamp  = (v, a, b) => v < a ? a : v > b ? b : v;
   const smooth = t => t * t * (3 - 2 * t);
   const lerp   = (a, b, t) => a + (b - a) * t;
-  const pad3   = n => String(n).padStart(3, '0');
 
   function windowAt(p, [a, b, c, d]) {
     if (p <= a || p >= d) return 0;
@@ -70,7 +65,7 @@
   let magX = 0, magY = 0, magXT = 0, magYT = 0;
   let magRect = null;
   let pointerIn = false, running = false, visible = false;
-  const lastWrite = { p: -1, ignite: -1, focus: -1, bloom: -1, frame: -1, rail: '' };
+  const lastWrite = { p: -1, ignite: -1, focus: -1, bloom: -1 };
 
   /* ── o palco ──────────────────────────────────────────────────
      Um caminho só, vídeo, em qualquer aparelho. Antes o celular
@@ -195,18 +190,6 @@
       if (video.readyState >= 1 && !video.seeking &&
           Math.abs(video.currentTime - t) > 1 / (FPS * 2)) {
         try { video.currentTime = t; } catch (e) {}
-      }
-
-      railFill.style.setProperty('--p', p.toFixed(4));
-
-      const fr = Math.round(p * (FRAMES - 1)) + 1;
-      if (fr !== lastWrite.frame) { lastWrite.frame = fr; readout.textContent = pad3(fr); }
-
-      const lbl = RAIL.find(r => p < r[0])[1];
-      if (lbl !== lastWrite.rail) {
-        lastWrite.rail = lbl;
-        railLbl.textContent = lbl;
-        railLbl.toggleAttribute('data-hot', p >= 0.73);
       }
 
       /* o wordmark acende quando o vídeo colapsa na luz (~0.80) e assenta
