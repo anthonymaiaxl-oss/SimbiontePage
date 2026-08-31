@@ -218,6 +218,56 @@
   </div>
 </section>
 
+<!-- ══════════════════ portfólio (carrossel 3D) ══════════════════
+     Extensão da seção de cima — mesmo fundo de malha atravessando.
+     Por enquanto ESTÉTICO: os cards têm href="#", o clique não navega.
+     Trocar os href pelos links reais dos projetos depois. -->
+<section class="folio" id="portfolio" aria-labelledby="folio-t">
+  <div class="folio__intro">
+    <p class="after__eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Trabalhos</p>
+    <h2 class="after__title" id="folio-t">Arrasta. É isso que a sua vai virar.</h2>
+  </div>
+
+  <div class="folio__viewport">
+    <ul class="folio__ring" role="list">
+      <li class="folio__slot" style="--n:0">
+        <a class="folio__card" href="#" data-folio>
+          <img src="assets/folio/1.webp" alt="Landing page — Ascent" width="760" height="1014" loading="lazy" decoding="async">
+          <span class="folio__cap"><span class="folio__cap-name">Ascent</span><span class="folio__cap-go">Ver projeto ↗</span></span>
+        </a>
+      </li>
+      <li class="folio__slot" style="--n:1">
+        <a class="folio__card" href="#" data-folio>
+          <img src="assets/folio/2.webp" alt="Landing page — ProGravity" width="760" height="1014" loading="lazy" decoding="async">
+          <span class="folio__cap"><span class="folio__cap-name">ProGravity</span><span class="folio__cap-go">Ver projeto ↗</span></span>
+        </a>
+      </li>
+      <li class="folio__slot" style="--n:2">
+        <a class="folio__card" href="#" data-folio>
+          <img src="assets/folio/3.webp" alt="Landing page — Bluebird" width="760" height="1014" loading="lazy" decoding="async">
+          <span class="folio__cap"><span class="folio__cap-name">Bluebird</span><span class="folio__cap-go">Ver projeto ↗</span></span>
+        </a>
+      </li>
+      <li class="folio__slot" style="--n:3">
+        <a class="folio__card" href="#" data-folio>
+          <img src="assets/folio/4.webp" alt="Landing page — Vegtopia" width="760" height="1014" loading="lazy" decoding="async">
+          <span class="folio__cap"><span class="folio__cap-name">Vegtopia</span><span class="folio__cap-go">Ver projeto ↗</span></span>
+        </a>
+      </li>
+      <li class="folio__slot" style="--n:4">
+        <a class="folio__card" href="#" data-folio>
+          <img src="assets/folio/5.webp" alt="Landing page — Creative Studio" width="760" height="1014" loading="lazy" decoding="async">
+          <span class="folio__cap"><span class="folio__cap-name">Creative Studio</span><span class="folio__cap-go">Ver projeto ↗</span></span>
+        </a>
+      </li>
+    </ul>
+    <button class="folio__arrow folio__arrow--prev" type="button" aria-label="Projeto anterior">&#8249;</button>
+    <button class="folio__arrow folio__arrow--next" type="button" aria-label="Próximo projeto">&#8250;</button>
+  </div>
+
+  <p class="folio__hint" aria-hidden="true">arrasta &nbsp;·&nbsp; ou use as setas</p>
+</section>
+
 </main>
 
 <footer class="foot">
@@ -226,5 +276,6 @@
 </footer>
 
 <script src="assets/app.js" defer></script>
+<script src="assets/folio.js" defer></script>
 </body>
 </html>
