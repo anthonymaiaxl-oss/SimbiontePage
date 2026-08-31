@@ -430,30 +430,38 @@ img, video, canvas{ display: block; max-width: 100%; }
   font-family: var(--f-display); font-weight: 700;
   font-size: clamp(2.1rem, .6rem + 7.2vw, 5.5rem);
   letter-spacing: .12em; text-transform: uppercase;
-  color: #dcefff;
   white-space: nowrap;
   opacity: var(--ignite, 0);
-  /* três propriedades separadas que compõem: transform = centraliza;
-     scale = a "respiração" do acender; translate/rotate = a deriva lenta,
-     que faz a palavra FLUIR de leve junto com o fundo (o Luiz achou
-     estático demais). */
   transform: translate(-50%, -50%);
   scale: calc(.965 + .035 * var(--ignite, 0));
-  translate: 0 0;
   filter: blur(calc((1 - var(--ignite, 0)) * 7px));
   text-shadow: 0 0 calc(8px + 26px * var(--ignite, 0)) rgba(62, 184, 255, calc(.18 + .28 * var(--ignite, 0)));
-  /* quando o vídeo acaba e a malha aparece atrás, a palavra reage a ela —
-     clareia sobre os blobs, recolhe no vão. `screen` mantém legível. */
+  /* PARADA (o Luiz odiou o movimento). Base azul-claro fixa e legível. */
+  color: #d6eafa;
+  isolation: isolate;
+}
+/* A "energia": uma cópia branca da palavra, mascarada numa faixa diagonal
+   estreita que corre do S ao E em loop, somando luz (`screen`). Lê como
+   um pulso percorrendo a escrita. */
+.js .stage__wordmark::after{
+  content: "Simbionte";
+  position: absolute; inset: 0;
+  color: #ffffff;
   mix-blend-mode: screen;
-  animation: wm-float 11s ease-in-out infinite;
-  will-change: opacity, transform, translate, filter;
+  -webkit-mask-image: linear-gradient(100deg, transparent 43%, #000 49%, #000 51%, transparent 57%);
+          mask-image: linear-gradient(100deg, transparent 43%, #000 49%, #000 51%, transparent 57%);
+  -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  animation: wm-trace 2.7s linear infinite;
+  will-change: mask-position;
 }
-@keyframes wm-float{
-  0%, 100% { translate: 0 0;        rotate: 0deg; }
-  30%      { translate: .9% -1.6%;  rotate: .35deg; }
-  62%      { translate: -.7% 1.1%;  rotate: -.3deg; }
+@keyframes wm-trace{
+  from { -webkit-mask-position: 135% 0; mask-position: 135% 0; }
+  to   { -webkit-mask-position: -35% 0; mask-position: -35% 0; }
 }
-@media (prefers-reduced-motion: reduce){ .js .stage__wordmark{ animation: none; } }
+@media (prefers-reduced-motion: reduce){
+  .js .stage__wordmark::after{ animation: none; opacity: 0; }
+}
 /* ── batimentos ─────────────────────────────────────────────── */
 /* Sem JS os batimentos são só blocos no fluxo do palco.
    Com JS eles viram absolutos — e precisam de um pai que realmente
@@ -516,6 +524,7 @@ img, video, canvas{ display: block; max-width: 100%; }
   font-size: clamp(1.125rem, .8rem + 1.2vw, 1.75rem);
   line-height: 1.25; letter-spacing: -.015em;
   color: var(--ink); text-wrap: balance;
+  text-shadow: 0 2px 22px rgba(4, 7, 12, .8);
 }
 
 .stat{
@@ -573,11 +582,18 @@ img, video, canvas{ display: block; max-width: 100%; }
 .js .beat--4 > *{ width: 100%; max-width: 44rem; }
 
 /* véus locais: contraste garantido sem apagar o vídeo inteiro */
-.js .beat--1::before,
-.js .beat--4::before{
+.js .beat--1::before{
   content: ''; position: absolute; inset: -18% -12%;
   z-index: -1; pointer-events: none;
   background: radial-gradient(ellipse at center, rgba(4,7,12,.86), rgba(4,7,12,0) 72%);
+}
+/* No fecho o hero já é a malha bonita e o vídeo sumiu — o kicker e os
+   CTAs não precisam de tarjão. Só um véu bem de leve, LÁ EMBAIXO (não
+   sobe até o SIMBIONTE), pra segurar o texto se um blob claro passar. */
+.js .beat--4::before{
+  content: ''; position: absolute; inset: 6% -8% -12%;
+  z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 64% 76% at 50% 62%, rgba(4,7,12,.4), rgba(4,7,12,0) 74%);
 }
 .js .beat--2::before,
 .js .beat--3::before{

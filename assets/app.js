@@ -60,12 +60,12 @@
   }
 
   /* ── estado ───────────────────────────────────────────────── */
-  let pRaw = 0, pSmooth = 0;                // progresso alvo e suavizado
+  let pRaw = 0, pSmooth = 0, pVid = 0;      // alvo · glide lento (CSS) · glide rápido (vídeo)
   let mxT = .5, myT = .5, mx = .5, my = .5; // cursor normalizado
   let magX = 0, magY = 0, magXT = 0, magYT = 0;
   let magRect = null;
   let pointerIn = false, running = false, visible = false;
-  const lastWrite = { p: -1, ignite: -1, focus: -1, bloom: -1 };
+  const lastWrite = { p: -1, pv: -1, ignite: -1, focus: -1, bloom: -1 };
 
   /* ── o palco ──────────────────────────────────────────────────
      Um caminho só, vídeo, em qualquer aparelho. Antes o celular
@@ -170,27 +170,37 @@
        senão o parallax fica borrachudo e atrasado. */
     const kP = 1 - Math.pow(1 - 0.052, dt / 16.667);
     const kM = 1 - Math.pow(1 - 0.14,  dt / 16.667);
+    /* O VÍDEO persegue quase 1:1 (kV alto): assim ele anda liso indo E
+       voltando, sem ficar catando o alvo devagar (era o "lag na volta").
+       Só os efeitos de CSS (batimentos, --ignite) é que ganham o glide
+       lento — ali o atraso é bonito, no vídeo não. */
+    const kV = 1 - Math.pow(1 - 0.4, dt / 16.667);
     pSmooth = lerp(pSmooth, pRaw, kP);
     if (Math.abs(pSmooth - pRaw) < .00002) pSmooth = pRaw;
+    pVid = lerp(pVid, pRaw, kV);
+    if (Math.abs(pVid - pRaw) < .00002) pVid = pRaw;
     mx = lerp(mx, mxT, kM);
     my = lerp(my, myT, kM);
 
     const p = pSmooth;
 
-    /* — o vídeo e os indicadores — */
+    /* — o vídeo — persegue pVid, não p, pra não lagar na volta — */
+    if (Math.abs(pVid - lastWrite.pv) > .0002) {
+      lastWrite.pv = pVid;
+      const t = pVid * LAST_T;
+      /* `video.seeking` é a correção do engasgo: sem ela eu mandava um
+         currentTime novo a cada quadro por cima de um seek ainda em voo.
+         Os pedidos empilhavam e o vídeo andava aos trancos. */
+      if (video.readyState >= 1 && !video.seeking &&
+          Math.abs(video.currentTime - t) > 1 / (FPS * 3)) {
+        try { video.currentTime = t; } catch (e) {}
+      }
+    }
+
+    /* — indicadores e batimentos (glide lento) — */
     if (Math.abs(p - lastWrite.p) > .0002) {
       lastWrite.p = p;
 
-      const t = p * LAST_T;
-      /* `video.seeking` é a correção do engasgo: sem ela eu mandava um
-         currentTime novo a cada quadro por cima de um seek ainda em voo.
-         Os pedidos empilhavam e o vídeo andava aos trancos. Agora só peço
-         quando o anterior terminou — o alvo seguinte é sempre o mais
-         recente, então não perco nada esperando. */
-      if (video.readyState >= 1 && !video.seeking &&
-          Math.abs(video.currentTime - t) > 1 / (FPS * 2)) {
-        try { video.currentTime = t; } catch (e) {}
-      }
 
       /* o wordmark acende quando o vídeo colapsa na luz (~0.80) e assenta
          no ponto de luz sobre o preto — a luz "vira" a palavra. O vídeo
@@ -284,5 +294,5 @@
 
   measure();
   addEventListener('load', measure);
-  pRaw = pSmooth = clamp((scrollY - trackTop) / range, 0, 1);
+  pRaw = pSmooth = pVid = clamp((scrollY - trackTop) / range, 0, 1);
 })();
