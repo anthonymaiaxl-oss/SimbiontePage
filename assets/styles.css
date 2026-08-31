@@ -78,17 +78,6 @@ body{
 
 img, video, canvas{ display: block; max-width: 100%; }
 
-/* núcleo FIXO da malha: um brilho grande e parado no centro, atrás das
-   camadas que giram — garante que o miolo da tela nunca fica no vão
-   entre os blobs (o "buraco preto no centro" que o Luiz via). */
-body::before{
-  content: ''; position: fixed; inset: -10%;
-  z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(62% 58% at 50% 45%, rgba(44,132,200,.34), transparent 76%),
-    radial-gradient(40% 40% at 62% 66%, rgba(234,168,74,.2), transparent 72%);
-  filter: blur(60px);
-}
 
 /* ── malha de gradiente (fundo de toda a página) ────────────────
    Blobs de luz azul-neon, borrados, em CHURN contínuo — três camadas
@@ -99,15 +88,15 @@ body::before{
 .mesh{
   position: fixed; inset: -12%;
   z-index: -1; pointer-events: none;
-  /* blobs GRANDES e sobrepostos, um deles GRUDADO no centro (55% de raio
-     em 50%/50%) — o miolo da tela nunca cai no vão entre eles. */
+  /* Blobs MENORES e mais separados: sobra preto de verdade entre eles
+     (~40% da tela a qualquer momento). Azul MAIS FUNDO, nada de azul
+     claro pastel. Como se move, os blobs varrem o preto — dá pra ver
+     o degradê andando. */
   background:
-    radial-gradient(70% 66% at 50% 50%, rgba(46,150,225,.44), transparent 78%),
-    radial-gradient(58% 58% at 24% 30%, rgba(62,184,255,.52), transparent 72%),
-    radial-gradient(54% 52% at 82% 22%, rgba(16,96,155,.62), transparent 74%),
-    /* âmbar de verdade — visível, mas ainda minoria */
-    radial-gradient(50% 46% at 70% 74%, rgba(232,166,72,.34), transparent 70%);
-  filter: blur(52px) saturate(1.15);
+    radial-gradient(42% 40% at 22% 28%, rgba(38,132,196,.5), transparent 66%),
+    radial-gradient(38% 36% at 82% 20%, rgba(14,74,124,.6), transparent 70%),
+    radial-gradient(34% 34% at 66% 74%, rgba(210,150,64,.28), transparent 64%);
+  filter: blur(46px) saturate(1.05);
   animation: mesh-a 24s linear infinite;
   will-change: transform;
 }
@@ -116,18 +105,17 @@ body::before{
 }
 .mesh::before{
   background:
-    radial-gradient(60% 56% at 66% 76%, rgba(62,184,255,.4), transparent 72%),
-    radial-gradient(52% 58% at 22% 68%, rgba(170,228,255,.36), transparent 72%),
-    radial-gradient(46% 44% at 32% 24%, rgba(234,158,66,.36), transparent 68%);
-  filter: blur(58px);
+    radial-gradient(40% 38% at 70% 78%, rgba(36,120,180,.42), transparent 66%),
+    radial-gradient(34% 40% at 20% 72%, rgba(24,92,150,.44), transparent 68%);
+  filter: blur(50px);
   animation: mesh-b 31s linear infinite;
 }
 .mesh::after{
   background:
-    radial-gradient(54% 50% at 44% 30%, rgba(180,235,255,.36), transparent 68%),
-    radial-gradient(56% 52% at 84% 60%, rgba(28,135,200,.46), transparent 72%),
-    radial-gradient(44% 44% at 52% 84%, rgba(240,176,80,.3), transparent 66%);
-  filter: blur(44px);
+    radial-gradient(36% 34% at 42% 26%, rgba(48,150,210,.4), transparent 64%),
+    radial-gradient(32% 32% at 84% 58%, rgba(18,82,134,.44), transparent 66%),
+    radial-gradient(30% 30% at 54% 86%, rgba(214,158,72,.24), transparent 62%);
+  filter: blur(42px);
   animation: mesh-c 19s linear infinite;
 }
 /* movimento contido (±8%) pra os blobs nunca deixarem o centro no escuro,
@@ -396,20 +384,9 @@ body::before{
   opacity: var(--bloom, 0);
   mix-blend-mode: screen;
 }
-/* malha de planta baixa, revelada só onde o cursor está */
-.stage__grid{
-  position: absolute; inset: 0; pointer-events: none; opacity: 0;
-  background-image:
-    linear-gradient(to right,  rgba(140,205,255,.20) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(140,205,255,.20) 1px, transparent 1px);
-  background-size: 76px 76px;
-  -webkit-mask-image: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 50%), #000, rgba(0,0,0,.3) 48%, transparent 74%);
-          mask-image: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 50%), #000, rgba(0,0,0,.3) 48%, transparent 74%);
-  transition: opacity 500ms var(--ease);
-}
-@media (hover: hover) and (pointer: fine){
-  .js .hero:hover .stage__grid{ opacity: 1; }
-}
+/* a malha revelada pelo cursor foi removida — o Luiz não quer NENHUMA
+   reação da hero ao mouse */
+.stage__grid{ display: none; }
 /* Mais leve do que era. Antes ela também servia para disfarçar a borda do
    vídeo; agora a borda não existe, então só precisa segurar o contraste do
    texto embaixo e no topo. */
@@ -496,14 +473,19 @@ body::before{
 }
 
 .eyebrow{
-  display: flex; align-items: center; gap: .625rem;
+  display: flex; align-items: center; gap: .6rem;
   margin: 0 0 1.25rem;
-  font-family: var(--f-mono); font-size: .75rem;
-  letter-spacing: .2em; text-transform: uppercase; color: var(--cy-hi);
+  font-family: var(--f-display); font-weight: 600; font-size: .8125rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--cy-hi);
 }
+/* triângulo pra frente (CSS puro, sem depender de glyph): "em movimento /
+   no ar" — troca o ponto genérico que aparecia em toda seção */
 .eyebrow__dot{
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--cy); box-shadow: 0 0 10px var(--cy);
+  width: 0; height: 0; border-radius: 0; background: none; box-shadow: none;
+  border-left: 7px solid var(--cy);
+  border-top: 4.5px solid transparent;
+  border-bottom: 4.5px solid transparent;
+  filter: drop-shadow(0 0 5px rgba(62,184,255,.6));
 }
 
 .beat__title{
@@ -540,8 +522,7 @@ body::before{
   font-family: var(--f-display); font-weight: 600;
   font-size: clamp(1.125rem, .8rem + 1.2vw, 1.75rem);
   line-height: 1.25; letter-spacing: -.015em;
-  color: var(--ink); text-wrap: balance;
-  text-shadow: 0 2px 10px rgba(4,7,12,.95), 0 1px 30px rgba(4,7,12,.9), 0 0 3px rgba(4,7,12,.7);
+  color: #f2f8ff; text-wrap: balance;
 }
 
 .stat{
@@ -659,7 +640,6 @@ body::before{
   margin: 1.25rem 0 0;
   font-family: var(--f-mono); font-size: .75rem;
   letter-spacing: .1em; color: var(--ink-2);
-  text-shadow: 0 1px 12px rgba(4,7,12,.95), 0 0 4px rgba(4,7,12,.8);
 }
 
 /* ── celular: o palco encolhe e o texto vai para baixo ──────── */
@@ -685,12 +665,16 @@ body::before{
   .js .stage__bloom{
     background: radial-gradient(ellipse 66% 24% at 50% 28%, rgba(62,184,255,.30), transparent 72%);
   }
-  /* capô: garante que a metade de baixo é preto limpo pros cartões e a
-     emenda com a seção seguinte não tem costura */
+  /* capô do celular — TAMBÉM multiplicado por (1 - --ignite): segura o
+     contraste dos cartões durante o scrub, mas SOME quando o vídeo acaba,
+     senão o hero fica preto no fim e cria a linha com a seção de baixo. */
   .js .stage__vignette{
     background: linear-gradient(to bottom,
-      rgba(4,7,12,.5) 0%, rgba(4,7,12,0) 12%,
-      rgba(4,7,12,0) 34%, rgba(4,7,12,.97) 60%, rgba(4,7,12,1) 100%);
+      rgba(4,7,12, calc(.5 * (1 - var(--ignite, 0)))) 0%,
+      rgba(4,7,12,0) 12%,
+      rgba(4,7,12,0) 34%,
+      rgba(4,7,12, calc(.95 * (1 - var(--ignite, 0)))) 60%,
+      rgba(4,7,12, calc(1 * (1 - var(--ignite, 0)))) 100%);
   }
   .js .stage__wordmark{
     top: 33%;
@@ -770,13 +754,12 @@ body::before{
   margin: 1.25rem 0 0;
   font-family: var(--f-mono); font-size: .75rem;
   letter-spacing: .1em; color: var(--ink-2);
-  text-shadow: 0 1px 12px rgba(4,7,12,.95), 0 0 4px rgba(4,7,12,.8);
 }
 .after__eyebrow{
-  display: inline-flex; align-items: center; gap: .625rem;
+  display: inline-flex; align-items: center; gap: .6rem;
   margin: 0 0 1.5rem;
-  font-family: var(--f-mono); font-size: .75rem;
-  letter-spacing: .2em; text-transform: uppercase; color: var(--cy-hi);
+  font-family: var(--f-display); font-weight: 600; font-size: .8125rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--cy-hi);
 }
 .after__title{
   margin: 0 0 1.5rem;
@@ -785,13 +768,11 @@ body::before{
   line-height: 1.02; letter-spacing: -.035em; text-wrap: balance;
   /* reage à malha atrás — ganha brilho sobre os blobs — mas `screen`
      nunca deixa ilegível (título de venda tem que ler sempre) */
-  color: #eef6ff;
-  text-shadow: 0 2px 26px rgba(4, 7, 12, .85), 0 0 2px rgba(4, 7, 12, .6);
+  color: #f2f8ff;
 }
 .after__text{
   margin: 0 auto 2.5rem; max-width: 42ch;
   color: var(--ink); text-wrap: pretty;
-  text-shadow: 0 1px 16px rgba(4, 7, 12, .9);
 }
 
 /* ── portfólio: carrossel 3D ────────────────────────────────────
@@ -805,7 +786,7 @@ body::before{
 }
 .folio__intro{
   position: relative; z-index: 2;
-  max-width: 46rem; margin: 0 auto clamp(2rem, 5vh, 3.5rem);
+  max-width: 46rem; margin: 0 auto clamp(3.5rem, 9vh, 6.5rem);
   padding: 0 var(--gut);
 }
 .folio__intro .after__title{ margin: 0; }
@@ -826,7 +807,7 @@ body::before{
 }
 .folio__slot{
   position: absolute; top: 50%; left: 50%;
-  width: clamp(210px, 24vw, 320px);
+  width: var(--cardw, clamp(210px, 24vw, 320px));
   aspect-ratio: 3 / 4;
   margin: 0;
   transform:
@@ -850,7 +831,12 @@ body::before{
   text-decoration: none;
   transition: transform .3s var(--ease), box-shadow .3s var(--ease);
 }
-.folio__card img{ width: 100%; height: 100%; object-fit: cover; }
+.folio__card img{
+  width: 100%; height: 100%; object-fit: cover;
+  /* sem o drag nativo da imagem roubando o gesto do carrossel */
+  pointer-events: none; -webkit-user-drag: none; user-select: none;
+}
+.folio__cap{ pointer-events: none; }
 @media (hover: hover){
   .folio__slot[style*="--face: 1"] .folio__card:hover,
   .folio__card:focus-visible{
@@ -899,9 +885,10 @@ body::before{
 }
 
 @media (max-width: 640px){
-  .folio__viewport{ perspective: 1100px; }
-  .folio__slot{ width: clamp(190px, 62vw, 250px); }
-  .folio__arrow{ display: none; }
+  .folio__viewport{ perspective: 900px; height: clamp(320px, 44vh, 420px); }
+  /* setas ficam, menores — no vídeo o carrossel do celular tem as
+     laterais espiando; o arrasto continua funcionando */
+  .folio__arrow{ width: 38px; height: 38px; font-size: 1.15rem; }
 }
 @media (prefers-reduced-motion: reduce){
   .folio__slot{ transition: none; }

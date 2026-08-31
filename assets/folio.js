@@ -20,12 +20,17 @@
   vp.style.setProperty('--step', STEP + 'deg');
   slots.forEach((s, i) => s.style.setProperty('--n', i));
 
-  /* raio: metade da largura do card / tan(passo/2), com folga, pra os
-     cards não colidirem no cilindro */
+  /* raio do cilindro: derivado da largura da tela (NÃO de medir o slot —
+     isso às vezes vinha 0 no load e empilhava os cards). Card mais
+     estreito no celular pra as laterais espiarem. */
   function setRadius() {
-    const w = slots[0].getBoundingClientRect().width || 280;
-    const r = (w / 2) / Math.tan((STEP / 2) * Math.PI / 180);
-    vp.style.setProperty('--radius', Math.max(r * 1.16, w * 1.05).toFixed(0) + 'px');
+    const vw = vp.clientWidth || window.innerWidth || 1280;
+    const cardW = vw <= 640
+      ? Math.max(150, Math.min(230, vw * 0.5))
+      : Math.max(210, Math.min(320, vw * 0.24));
+    const r = (cardW / 2) / Math.tan((STEP / 2) * Math.PI / 180);
+    vp.style.setProperty('--radius', Math.max(r * 1.12, cardW * 1.02).toFixed(0) + 'px');
+    vp.style.setProperty('--cardw', cardW.toFixed(0) + 'px');
   }
   setRadius();
   addEventListener('resize', () => { setRadius(); apply(); }, { passive: true });
@@ -119,7 +124,11 @@
   slots.forEach(s => {
     const c = s.querySelector('.folio__card');
     c.addEventListener('click', e => { if (c.getAttribute('href') === '#') e.preventDefault(); });
+    const im = c.querySelector('img');
+    if (im) im.draggable = false;
   });
+  // o navegador tenta iniciar um drag nativo da imagem/link e rouba o gesto
+  vp.addEventListener('dragstart', e => e.preventDefault());
 
   ring.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') { vel -= STEP * 0.11; kick(); }

@@ -16,8 +16,6 @@
   const stage   = hero.querySelector('.hero__stage');
   const video   = hero.querySelector('.stage__video');
   const beatEls = [...hero.querySelectorAll('.beat')];
-  const magnet  = hero.querySelector('[data-magnet]');
-  const magGlow = magnet && magnet.querySelector('.btn__glow');
   const navMark = document.querySelector('.nav__mark');
 
   const FRAMES = 121, FPS = 24;
@@ -50,21 +48,16 @@
   }
 
   /* ── geometria em cache (nunca lida dentro do laço) ───────── */
-  let trackTop = 0, range = 1, stageW = 0, stageH = 0;
+  let trackTop = 0, range = 1;
   function measure() {
     const r = track.getBoundingClientRect();
     trackTop = r.top + window.scrollY;
     range    = Math.max(1, track.offsetHeight - stage.offsetHeight);
-    stageW   = stage.offsetWidth;
-    stageH   = stage.offsetHeight;
   }
 
   /* ── estado ───────────────────────────────────────────────── */
   let pRaw = 0, pSmooth = 0, pVid = 0;      // alvo · glide lento (CSS) · glide rápido (vídeo)
-  let mxT = .5, myT = .5, mx = .5, my = .5; // cursor normalizado
-  let magX = 0, magY = 0, magXT = 0, magYT = 0;
-  let magRect = null;
-  let pointerIn = false, running = false, visible = false;
+  let running = false, visible = false;
   const lastWrite = { p: -1, pv: -1, ignite: -1, focus: -1, bloom: -1 };
 
   /* ── o palco ──────────────────────────────────────────────────
@@ -98,19 +91,7 @@
   addEventListener('resize', () => {
     measure();
     pRaw = clamp((scrollY - trackTop) / range, 0, 1);
-    magRect = null;
   }, { passive: true });
-
-  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    hero.addEventListener('pointermove', e => {
-      pointerIn = true;
-      mxT = e.clientX / stageW;
-      myT = e.clientY / stageH;
-    }, { passive: true });
-    hero.addEventListener('pointerleave', () => {
-      pointerIn = false; mxT = .5; myT = .5;
-    }, { passive: true });
-  }
 
   /* teclado: focar um botão escondido rola o hero até ele */
   beatEls.forEach((el, i) => {
@@ -169,7 +150,6 @@
        "continua fluido" que o Luiz pediu. O cursor persegue mais rápido,
        senão o parallax fica borrachudo e atrasado. */
     const kP = 1 - Math.pow(1 - 0.052, dt / 16.667);
-    const kM = 1 - Math.pow(1 - 0.14,  dt / 16.667);
     /* O VÍDEO persegue quase 1:1 (kV alto): assim ele anda liso indo E
        voltando, sem ficar catando o alvo devagar (era o "lag na volta").
        Só os efeitos de CSS (batimentos, --ignite) é que ganham o glide
@@ -179,8 +159,6 @@
     if (Math.abs(pSmooth - pRaw) < .00002) pSmooth = pRaw;
     pVid = lerp(pVid, pRaw, kV);
     if (Math.abs(pVid - pRaw) < .00002) pVid = pRaw;
-    mx = lerp(mx, mxT, kM);
-    my = lerp(my, myT, kM);
 
     const p = pSmooth;
 
@@ -246,35 +224,9 @@
       }
     }
 
-    /* — profundidade pelo cursor — */
-    stage.style.setProperty('--px', ((mx - .5) * 2).toFixed(3));
-    stage.style.setProperty('--py', ((my - .5) * 2).toFixed(3));
-    if (pointerIn) {
-      stage.style.setProperty('--mx', (mx * 100).toFixed(2) + '%');
-      stage.style.setProperty('--my', (my * 100).toFixed(2) + '%');
-    }
-
-    /* — botão magnético — */
-    if (magnet) {
-      const live = +magnet.closest('.beat').style.opacity > .5;
-      if (live && pointerIn) {
-        if (!magRect) magRect = magnet.getBoundingClientRect();
-        const dx = mxT * stageW - (magRect.left + magRect.width / 2);
-        const dy = myT * stageH - (magRect.top + magRect.height / 2);
-        const dist = Math.hypot(dx, dy);
-        const pull = dist < 190 ? 1 - dist / 190 : 0;
-        magXT = dx * .28 * pull;
-        magYT = dy * .34 * pull;
-        magGlow.style.setProperty('--gx', (mxT * stageW - magRect.left) + 'px');
-        magGlow.style.setProperty('--gy', (myT * stageH - magRect.top) + 'px');
-      } else {
-        magXT = magYT = 0;
-        magRect = null;
-      }
-      magX = lerp(magX, magXT, .16);
-      magY = lerp(magY, magYT, .16);
-      magnet.style.transform = `translate3d(${magX.toFixed(2)}px, ${magY.toFixed(2)}px, 0)`;
-    }
+    /* O Luiz não quer NENHUMA reação da hero ao mouse — nada de parallax,
+       de malha revelada pelo cursor, nem de botão magnético. O laço só
+       cuida do scrub do vídeo e dos batimentos. */
 
     requestAnimationFrame(frame);
   }
