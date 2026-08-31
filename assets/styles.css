@@ -103,14 +103,17 @@ img, video, canvas{ display: block; max-width: 100%; }
 .mesh::before{
   background:
     radial-gradient(64% 58% at 68% 74%, rgba(62,184,255,.5), transparent 72%),
-    radial-gradient(56% 60% at 24% 70%, rgba(170,228,255,.42), transparent 72%);
+    radial-gradient(56% 60% at 24% 70%, rgba(170,228,255,.42), transparent 72%),
+    /* um fio de âmbar, bem fraco, só pra tirar o azul do "enjoativo" */
+    radial-gradient(40% 44% at 30% 22%, rgba(224,180,96,.16), transparent 66%);
   filter: blur(58px);
   animation: mesh-b 31s linear infinite;
 }
 .mesh::after{
   background:
     radial-gradient(58% 52% at 44% 30%, rgba(180,235,255,.44), transparent 68%),
-    radial-gradient(60% 56% at 82% 62%, rgba(28,135,200,.56), transparent 72%);
+    radial-gradient(60% 56% at 82% 62%, rgba(28,135,200,.56), transparent 72%),
+    radial-gradient(38% 40% at 78% 20%, rgba(230,172,84,.14), transparent 64%);
   filter: blur(44px);
   animation: mesh-c 19s linear infinite;
 }
@@ -288,9 +291,10 @@ img, video, canvas{ display: block; max-width: 100%; }
      aparece de verdade atrás e a palavra reage a ela. O `screen` do
      vídeo continua funcionando: 90% da cor da página ainda é a
      referência da mistura. */
-  /* OPACO durante o vídeo (hero preto, sem malha vazando) → .4 no fim
-     (a malha aparece, exatamente como a seção de baixo). */
-  background: rgba(4, 7, 12, calc(1 - .6 * var(--ignite, 0)));
+  /* OPACO durante o vídeo (hero preto, sem malha vazando) → TRANSPARENTE
+     no fim: a malha aparece inteira, sem véu nenhum — exatamente igual
+     à seção de baixo, que também não tem véu. Aí não há o que descasar. */
+  background: rgba(4, 7, 12, calc(1 - var(--ignite, 0)));
   /* o parallax do mouse fica aqui; a máscara e o borrão da borda (::after,
      .stage__vignette) ficam do TAMANHO DA TELA, não da imagem — senão o
      efeito de borda cai fora do quadro quando o vídeo sangra. */
@@ -743,10 +747,10 @@ img, video, canvas{ display: block; max-width: 100%; }
 .after{
   position: relative; z-index: 1;
   padding: clamp(6rem, 13vh, 9.5rem) var(--gut);
-  /* EXATAMENTE o mesmo véu do fim do hero (.4 sobre a malha). Hero e
-     seção são a mesma superfície — a malha atravessa as duas igual,
-     sem tom diferente, sem aresta. */
-  background: rgba(4, 7, 12, .4);
+  /* SEM véu. Hero (no fim) e esta seção são os dois só a malha, crua —
+     não há duas opacidades pra descasar, logo não há costura possível.
+     O texto se defende com sombra própria + um brilho local atrás. */
+  background: transparent;
   text-align: center;
   /* Sem `content-visibility: auto` aqui de propósito: quando a seção
      saía de vista ela voltava ao tamanho estimado, o documento
@@ -758,6 +762,14 @@ img, video, canvas{ display: block; max-width: 100%; }
   position: relative; z-index: 2;
   max-width: 44rem; margin: 0 auto;
   display: flex; flex-direction: column; align-items: center;
+}
+/* brilho escuro local: segura o contraste do texto sobre a malha sem
+   véu na seção toda (era isso que criava a costura com o hero) */
+.after__body::before{
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 150%; height: 150%;
+  background: radial-gradient(ellipse 46% 52% at 50% 50%, rgba(4,7,12,.62), rgba(4,7,12,0) 75%);
 }
 .after__fine{
   margin: 1.25rem 0 0;
@@ -777,13 +789,13 @@ img, video, canvas{ display: block; max-width: 100%; }
   line-height: 1.02; letter-spacing: -.035em; text-wrap: balance;
   /* reage à malha atrás — ganha brilho sobre os blobs — mas `screen`
      nunca deixa ilegível (título de venda tem que ler sempre) */
-  color: #e8f3ff;
-  mix-blend-mode: screen;
-  text-shadow: 0 1px 30px rgba(4, 7, 12, .5);
+  color: #eef6ff;
+  text-shadow: 0 2px 26px rgba(4, 7, 12, .85), 0 0 2px rgba(4, 7, 12, .6);
 }
 .after__text{
   margin: 0 auto 2.5rem; max-width: 42ch;
-  color: var(--ink-2); text-wrap: pretty;
+  color: var(--ink); text-wrap: pretty;
+  text-shadow: 0 1px 16px rgba(4, 7, 12, .9);
 }
 
 .foot{
@@ -792,10 +804,10 @@ img, video, canvas{ display: block; max-width: 100%; }
   justify-content: space-between;
   padding: 2rem var(--gut) 3rem;
   border-top: 1px solid var(--line-2);
-  background: rgba(4, 7, 12, .4);
+  background: transparent;
   font-size: .875rem; color: var(--ink-3);
 }
-@media (prefers-reduced-motion: reduce){ .after, .foot{ background: var(--bg); } }
+@media (prefers-reduced-motion: reduce){ .js .stage__media{ background: var(--bg); } }
 .foot p{ margin: 0; }
 
 /* ── quem pediu menos movimento recebe a página, não o filme ── */
