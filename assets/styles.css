@@ -894,17 +894,140 @@ img, video, canvas{ display: block; max-width: 100%; }
   .folio__slot{ transition: none; }
 }
 
+/* ── RODAPÉ ─────────────────────────────────────────────────────
+   Painel de tom NEUTRO. `background` OPACO no .foot: a malha de
+   gradiente (position:fixed, z-index:-1) NÃO vaza por aqui — o
+   rodapé não brilha como o resto da página. O nome ao fundo é só
+   contorno (vazado) e só acende quando o pulso de energia passa. */
 .foot{
   position: relative; z-index: 1;
-  display: flex; flex-wrap: wrap; gap: 1rem 2rem;
-  justify-content: space-between;
-  padding: 2rem var(--gut) 3rem;
-  border-top: 1px solid var(--line-2);
-  background: transparent;
-  font-size: .875rem; color: var(--ink-3);
+  background: var(--bg);
+  padding: clamp(2.5rem, 6vw, 5rem) var(--gut) clamp(2rem, 4vw, 3.5rem);
 }
 @media (prefers-reduced-motion: reduce){ .js .stage__media{ background: var(--bg); } }
-.foot p{ margin: 0; }
+
+.foot__panel{
+  position: relative;
+  max-width: 78rem; margin: 0 auto;
+  padding: clamp(2rem, 4vw, 3.25rem) clamp(1.5rem, 3.5vw, 3rem) clamp(6.5rem, 14vw, 10rem);
+  border-radius: 22px;
+  border: 1px solid rgba(150, 180, 210, .08);
+  /* cinza-grafite levemente frio — sem azul-neon, sem brilho */
+  background: linear-gradient(180deg, #0d1219 0%, #0a0e13 60%, #090c11 100%);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.foot__grid{
+  position: relative; z-index: 2;
+  display: grid; gap: clamp(1.75rem, 4vw, 3rem);
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+}
+@media (max-width: 900px){
+  .foot__grid{ grid-template-columns: 1fr 1fr; }
+  .foot__brand{ grid-column: 1 / -1; }
+}
+@media (max-width: 560px){
+  .foot__grid{ grid-template-columns: 1fr; }
+}
+
+.foot__brand{ max-width: 34ch; }
+.foot__logo{
+  display: inline-flex; align-items: center; gap: .6rem;
+  color: var(--ink); text-decoration: none;
+  font-family: var(--f-display); font-weight: 700;
+  font-size: 1rem; letter-spacing: .16em; text-transform: uppercase;
+}
+.foot__logo-mark{
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--cy);
+  box-shadow: 0 0 10px rgba(62, 184, 255, .55);
+}
+.foot__blurb{
+  margin: 1rem 0 0;
+  font-size: .9375rem; line-height: 1.6;
+  color: var(--ink-3); text-wrap: pretty;
+}
+
+.foot__col{ display: flex; flex-direction: column; align-items: flex-start; gap: .7rem; }
+.foot__head{
+  margin: 0 0 .35rem;
+  font-family: var(--f-display); font-weight: 600;
+  font-size: .9375rem; letter-spacing: -.01em; color: var(--ink);
+}
+.foot__col a,
+.foot__note{
+  font-size: .9375rem; line-height: 1.35;
+  color: var(--ink-3); text-decoration: none;
+}
+.foot__col a{
+  padding-block: .15rem;
+  transition: color var(--dur-2) var(--ease);
+}
+.foot__col a:hover{ color: var(--cy-hi); }
+
+.foot__rule{
+  position: relative; z-index: 2;
+  height: 1px; margin: clamp(2rem, 4vw, 3rem) 0 1.25rem;
+  background: rgba(150, 180, 210, .12);
+}
+
+.foot__base{
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: .5rem 1.5rem;
+  align-items: center; justify-content: space-between;
+}
+.foot__copy{
+  margin: 0;
+  font-family: var(--f-mono); font-size: .75rem;
+  letter-spacing: .04em; color: var(--ink-3);
+}
+.foot__top{
+  font-family: var(--f-mono); font-size: .75rem;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-3); text-decoration: none;
+  transition: color var(--dur-2) var(--ease);
+}
+.foot__top:hover{ color: var(--cy-hi); }
+
+/* o nome VAZADO ao fundo do painel — só contorno, quase invisível
+   parado. Uma cópia (::after) com o contorno aceso corre numa faixa
+   diagonal estreita: a energia percorre as letras. Igual ao SIMBIONTE
+   do hero, agora vazado. */
+.foot__wordmark{
+  position: absolute; z-index: 1;
+  left: 50%; bottom: clamp(-2.4rem, -2vw, -1.2rem);
+  transform: translateX(-50%);
+  margin: 0; width: 130%; text-align: center;
+  font-family: var(--f-display); font-weight: 700;
+  font-size: clamp(3.25rem, 17vw, 13rem);
+  line-height: .8; letter-spacing: -.02em; text-transform: uppercase;
+  white-space: nowrap; pointer-events: none; -webkit-user-select: none; user-select: none;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(150, 185, 220, .10);
+}
+.foot__wordmark::after{
+  content: "Simbionte";
+  position: absolute; inset: 0;
+  color: transparent;
+  -webkit-text-stroke: 1.4px var(--cy);
+  filter: drop-shadow(0 0 5px rgba(62, 184, 255, .7))
+          drop-shadow(0 0 16px rgba(62, 184, 255, .35));
+  -webkit-mask-image: linear-gradient(100deg, transparent 44%, #000 49%, #000 51%, transparent 56%);
+          mask-image: linear-gradient(100deg, transparent 44%, #000 49%, #000 51%, transparent 56%);
+  -webkit-mask-size: 320% 100%; mask-size: 320% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  animation: foot-trace 4.2s linear infinite;
+  will-change: mask-position;
+}
+@keyframes foot-trace{
+  from { -webkit-mask-position: 140% 0; mask-position: 140% 0; }
+  to   { -webkit-mask-position: -40% 0; mask-position: -40% 0; }
+}
+@media (prefers-reduced-motion: reduce){
+  .foot__wordmark{ -webkit-text-stroke-color: rgba(150, 185, 220, .22); }
+  .foot__wordmark::after{ animation: none; opacity: 0; }
+}
 
 /* ── quem pediu menos movimento recebe a página, não o filme ── */
 @media (prefers-reduced-motion: reduce){

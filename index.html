@@ -61,8 +61,8 @@
      Para ligar o funil de verdade:
 
        1. Aperte Ctrl+F neste arquivo e procure por:  wa.me
-       2. Aparecem 3 resultados (botão do topo, botão do hero,
-          botão do rodapé). Troque o número nos 3.
+       2. Aparecem 4 resultados (botão do topo, botão do hero,
+          botão da seção "depois" e link do rodapé). Troque o número nos 4.
        3. Formato: 55 + DDD + número, sem espaço, traço ou parêntese.
           Ex.: (11) 99876-5432  vira  5511998765432
 
@@ -270,9 +270,58 @@
 
 </main>
 
+<!-- ══════════════════════════ RODAPÉ ══════════════════════════
+     Painel de tom NEUTRO: a malha de gradiente da página não passa por
+     ele (fundo opaco). O nome SIMBIONTE ao fundo é VAZADO (só contorno)
+     e fica quase invisível — só acende quando o pulso de energia passa
+     por cima, o mesmo efeito do SIMBIONTE do hero. -->
 <footer class="foot">
-  <p>© 2026 Simbionte</p>
-  <p>Feito com o mesmo cuidado que a gente vende.</p>
+  <div class="foot__panel">
+
+    <div class="foot__grid">
+      <div class="foot__brand">
+        <a class="foot__logo" href="/" aria-label="Simbionte, início">
+          <span class="foot__logo-mark" aria-hidden="true"></span>
+          <span>Simbionte</span>
+        </a>
+        <p class="foot__blurb">
+          Estúdio de landing pages sob medida. Uma página que abre antes do
+          julgamento e conduz o visitante até o botão. Do briefing ao ar em 7 dias.
+        </p>
+      </div>
+
+      <nav class="foot__col" aria-label="O estúdio">
+        <h2 class="foot__head">O estúdio</h2>
+        <a href="#depois">Método</a>
+        <a href="#portfolio">Trabalhos</a>
+        <a href="#depois">Preços</a>
+      </nav>
+
+      <nav class="foot__col" aria-label="Como funciona">
+        <h2 class="foot__head">Como funciona</h2>
+        <a href="#depois">Do briefing ao ar</a>
+        <a href="#portfolio">O que já fizemos</a>
+        <a href="#depois">Dúvidas frequentes</a>
+      </nav>
+
+      <div class="foot__col">
+        <h2 class="foot__head">Fale com a gente</h2>
+        <a href="https://wa.me/5500000000000?text=Oi%21%20Vim%20pelo%20site%20da%20Simbionte%20e%20quero%20uma%20landing%20page." target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:oi@simbionte.com.br">oi@simbionte.com.br</a>
+        <span class="foot__note">Brasil · atendimento remoto</span>
+      </div>
+    </div>
+
+    <div class="foot__rule" aria-hidden="true"></div>
+
+    <div class="foot__base">
+      <p class="foot__copy">© 2026 Simbionte · Feito com o mesmo cuidado que a gente vende.</p>
+      <a class="foot__top" href="#nav">Voltar ao topo <span aria-hidden="true">↑</span></a>
+    </div>
+
+    <p class="foot__wordmark" aria-hidden="true">Simbionte</p>
+
+  </div>
 </footer>
 
 <script src="assets/app.js" defer></script>
